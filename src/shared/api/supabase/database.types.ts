@@ -19,6 +19,24 @@ export interface ProductRow {
 
 export type ProductInsert = Omit<ProductRow, 'created_at'> & { created_at?: string }
 
+export interface ProfileRow {
+  id: string
+  email: string
+  first_name: string
+  last_name: string
+  alias: string | null
+  created_at: string
+  updated_at: string
+}
+
+export type ProfileInsert = {
+  id: string
+  email: string
+  first_name: string
+  last_name: string
+  alias?: string | null
+}
+
 type OrderRowShape = {
   id: number
   customer: unknown
@@ -56,6 +74,12 @@ type OrderItemInsertShape = {
 export interface Database {
   public: {
     Tables: {
+      profiles: {
+        Row: ProfileRow
+        Insert: ProfileInsert
+        Update: Partial<Omit<ProfileRow, 'id' | 'email' | 'created_at' | 'updated_at'>>
+        Relationships: []
+      }
       products: {
         Row: ProductRow
         Insert: ProductInsert
