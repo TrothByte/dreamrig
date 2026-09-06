@@ -14,6 +14,7 @@
   --muted: #8b8b93;
   --accent: #a3e635;
   --accent-soft: rgb(163 230 53 / 0.12);
+  --success: #4ade80;
   --danger: #f87171;
   --danger-hover: #ef4444;
   --warn: #fbbf24;
@@ -31,6 +32,7 @@
   --muted: #71717a;
   --accent: #a3e635;
   --accent-soft: rgb(163 230 53 / 0.2);
+  --success: #16a34a;
   --danger: #dc2626;
   --danger-hover: #b91c1c;
   --warn: #d97706;
@@ -78,6 +80,7 @@
   --color-muted: var(--muted);
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
+  --color-success: var(--success);
   --color-danger: var(--danger);
   --color-danger-hover: var(--danger-hover);
   --color-warn: var(--warn);

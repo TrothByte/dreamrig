@@ -44,7 +44,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
       className={cn(
         'group relative flex flex-col overflow-hidden rounded-card border border-border bg-surface',
         'transition-all duration-200 ease-out',
-        'hover:-translate-y-0.5 hover:border-border-strong hover:shadow-card',
+        'hover:-translate-y-0.5 hover:border-border-strong hover:bg-surface-2 hover:shadow-card',
         'active:scale-[0.99]',
         className,
       )}
@@ -87,22 +87,17 @@ export function ProductCard({ product, className }: ProductCardProps) {
               {formatPrice(product.marketPrice)}
             </span>
             {discount > 0 && (
-              <span className="rounded-full bg-accent-soft px-2 py-0.5 font-mono text-12 tabular-nums font-medium text-accent">
+              <span className="rounded-full bg-surface-2 px-2 py-0.5 font-mono text-12 tabular-nums font-medium text-accent">
                 −{discount}%
               </span>
             )}
           </div>
         </div>
 
-        <p
-          className={cn(
-            'flex items-center gap-1.5 text-12',
-            unavailable ? 'text-muted' : 'text-muted',
-          )}
-        >
+        <p className="flex items-center gap-1.5 text-12 text-muted">
           <span
             aria-hidden="true"
-            className={cn('size-1.5 rounded-full', unavailable ? 'bg-muted' : 'bg-accent')}
+            className={cn('size-1.5 rounded-full', unavailable ? 'bg-muted' : 'bg-success')}
           />
           {unavailable ? 'Под заказ' : `В наличии: ${product.inStock} шт`}
         </p>

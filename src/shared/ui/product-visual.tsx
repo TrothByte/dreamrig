@@ -31,15 +31,19 @@ export function ProductVisual({ category, className, iconClassName }: ProductVis
         className,
       )}
       style={{
-        backgroundImage: `linear-gradient(145deg, color-mix(in srgb, ${hue} 18%, var(--surface-2)), var(--surface-2))`,
+        backgroundColor: 'var(--surface-2)',
+        backgroundImage: `radial-gradient(120% 90% at 85% 0%, color-mix(in srgb, ${hue} 16%, transparent) 0%, transparent 55%), linear-gradient(165deg, var(--surface-2) 0%, var(--surface) 100%)`,
       }}
     >
       <div aria-hidden="true" className="product-visual-grid absolute inset-0" />
       <Icon
         aria-hidden="true"
-        strokeWidth={1.75}
-        className={cn('relative size-10 sm:size-12', iconClassName)}
-        style={{ color: `color-mix(in srgb, ${hue} 70%, var(--text))` }}
+        strokeWidth={1.5}
+        className={cn(
+          'relative size-9 transition-transform duration-200 ease-out sm:size-11',
+          iconClassName,
+        )}
+        style={{ color: `color-mix(in srgb, ${hue} 52%, var(--text))` }}
       />
     </div>
   )
