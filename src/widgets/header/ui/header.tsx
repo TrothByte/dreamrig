@@ -1,6 +1,6 @@
 import { Moon, ShoppingCart, Sun } from 'lucide-react'
-import { useEffect, useState } from 'react'
 import { Link, NavLink } from 'react-router'
+import { useTheme } from '@/app/theme-provider'
 import { Button } from '@/shared/ui'
 
 const navItemClass = ({ isActive }: { isActive: boolean }) =>
@@ -11,12 +11,8 @@ const navItemClass = ({ isActive }: { isActive: boolean }) =>
   ].join(' ')
 
 export function Header() {
-  const [isLight, setIsLight] = useState(() => document.documentElement.classList.contains('light'))
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('light', isLight)
-    localStorage.setItem('dreamrig-theme', isLight ? 'light' : 'dark')
-  }, [isLight])
+  const { theme, toggleTheme } = useTheme()
+  const isLight = theme === 'light'
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/70 backdrop-blur-xl">
@@ -43,7 +39,7 @@ export function Header() {
             type="button"
             variant="ghost"
             size="icon"
-            onClick={() => setIsLight((current) => !current)}
+            onClick={toggleTheme}
             aria-label={isLight ? 'Включить тёмную тему' : 'Включить светлую тему'}
           >
             {isLight ? <Moon /> : <Sun />}

@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router'
 import './index.css'
 import { AppRouter } from '@/app/router'
+import { ThemeProvider } from '@/app/theme-provider'
 
 const rootElement = document.getElementById('root')
 
@@ -12,8 +13,10 @@ if (rootElement === null) {
 
 createRoot(rootElement).render(
   <StrictMode>
-    <BrowserRouter>
-      <AppRouter />
-    </BrowserRouter>
+    <ThemeProvider>
+      <BrowserRouter>
+        <AppRouter />
+      </BrowserRouter>
+    </ThemeProvider>
   </StrictMode>,
 )
