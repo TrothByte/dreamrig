@@ -1,0 +1,28 @@
+name: Keep alive
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  keep-alive:
+    name: Ping Supabase REST
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wake up Supabase project
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "${SUPABASE_URL}" ] || [ -z "${SUPABASE_ANON_KEY}" ]; then
+            echo "Secrets SUPABASE_URL and SUPABASE_ANON_KEY are not configured yet."
+            exit 1
+          fi
+          curl -sS -o /dev/null -w "%{http_code}\n" \
+            -H "apikey: ${SUPABASE_ANON_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
+            "${SUPABASE_URL}/rest/v1/products?select=id&limit=1"
