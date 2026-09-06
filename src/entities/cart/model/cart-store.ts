@@ -6,14 +6,18 @@ export interface CartLine {
   productId: string
   slug: string
   name: string
+  category: Product['category']
   priceAtPurchase: number
+  marketPrice: number
   inStock: number
   qty: number
 }
 
+export type AddProductResult = 'added' | 'limit' | 'out-of-stock'
+
 export interface CartState {
   lines: CartLine[]
-  addProduct: (product: Product, qty?: number) => void
+  addProduct: (product: Product, qty?: number) => AddProductResult
   setQty: (productId: string, qty: number) => void
   removeLine: (productId: string) => void
   clear: () => void
@@ -21,39 +25,45 @@ export interface CartState {
 
 export const useCartStore = create<CartState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       lines: [],
-      addProduct: (product, qty = 1) =>
-        set((state) => {
-          if (product.inStock <= 0 || qty <= 0) {
-            return state
-          }
-          const existing = state.lines.find((line) => line.productId === product.id)
+      addProduct: (product, qty = 1) => {
+        const state = get()
+        if (product.inStock <= 0) {
+          return 'out-of-stock'
+        }
+        const existing = state.lines.find((line) => line.productId === product.id)
+        if (existing !== undefined && existing.qty >= product.inStock) {
+          return 'limit'
+        }
+        const requested = existing === undefined ? qty : existing.qty + qty
+        const nextQty = Math.min(requested, product.inStock)
+        set((current) => {
           if (existing === undefined) {
             return {
               lines: [
-                ...state.lines,
+                ...current.lines,
                 {
                   productId: product.id,
                   slug: product.slug,
                   name: product.name,
+                  category: product.category,
                   priceAtPurchase: product.price,
+                  marketPrice: product.marketPrice,
                   inStock: product.inStock,
-                  qty: Math.min(qty, product.inStock),
+                  qty: nextQty,
                 },
               ],
             }
           }
-          const nextQty = Math.min(existing.qty + qty, product.inStock)
-          if (nextQty === existing.qty) {
-            return state
-          }
           return {
-            lines: state.lines.map((line) =>
+            lines: current.lines.map((line) =>
               line.productId === product.id ? { ...line, qty: nextQty } : line,
             ),
           }
-        }),
+        })
+        return 'added'
+      },
       setQty: (productId, qty) =>
         set((state) => {
           if (qty <= 0) {
@@ -71,7 +81,7 @@ export const useCartStore = create<CartState>()(
         })),
       clear: () => set({ lines: [] }),
     }),
-    { name: 'dreamrig-cart' },
+    { name: 'dreamrig-cart-v1' },
   ),
 )
 
@@ -79,7 +89,18 @@ export function selectCartTotalQty(state: CartState): number {
   return state.lines.reduce((sum, line) => sum + line.qty, 0)
 }
 
-export function selectCartLineQty(productId: string) {
-  return (state: CartState): number =>
-    state.lines.find((line) => line.productId === productId)?.qty ?? 0
+export function selectCartTotals(state: CartState): {
+  total: number
+  marketTotal: number
+  savings: number
+  count: number
+} {
+  const total = state.lines.reduce((sum, line) => sum + line.priceAtPurchase * line.qty, 0)
+  const marketTotal = state.lines.reduce((sum, line) => sum + line.marketPrice * line.qty, 0)
+  return {
+    total,
+    marketTotal,
+    savings: marketTotal - total,
+    count: state.lines.reduce((sum, line) => sum + line.qty, 0),
+  }
 }

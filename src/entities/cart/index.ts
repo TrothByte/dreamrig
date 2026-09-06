@@ -1,6 +1,6 @@
-export type { CartLine, CartState } from './model/cart-store'
+export type { AddProductResult, CartLine, CartState } from './model/cart-store'
 export {
-  selectCartLineQty,
   selectCartTotalQty,
+  selectCartTotals,
   useCartStore,
 } from './model/cart-store'

@@ -1,7 +1,7 @@
 import { Check, Plus, Star } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router'
-import { useCartStore } from '@/entities/cart'
+import { useAddToCart } from '@/features/add-to-cart'
 import { cn, discountPercent, formatPrice } from '@/shared/lib'
 import type { Product } from '@/shared/model'
 import { Button, ProductVisual } from '@/shared/ui'
@@ -13,7 +13,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product, className }: ProductCardProps) {
   const discount = discountPercent(product.price, product.marketPrice)
-  const addProduct = useCartStore((state) => state.addProduct)
+  const addToCart = useAddToCart()
   const [justAdded, setJustAdded] = useState(false)
   const addedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -26,10 +26,9 @@ export function ProductCard({ product, className }: ProductCardProps) {
   }, [])
 
   const handleAddToCart = () => {
-    if (product.inStock <= 0) {
+    if (!addToCart(product)) {
       return
     }
-    addProduct(product)
     setJustAdded(true)
     if (addedTimerRef.current !== null) {
       clearTimeout(addedTimerRef.current)
