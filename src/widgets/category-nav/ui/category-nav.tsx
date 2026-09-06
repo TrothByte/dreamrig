@@ -51,6 +51,39 @@ export function CategoryNav({ className }: CategoryNavProps) {
     scroller.scrollBy({ left: direction * scroller.clientWidth * 0.75, behavior: 'smooth' })
   }
 
+  useEffect(() => {
+    if (!isDragging) {
+      return
+    }
+    const scroller = scrollerRef.current
+    if (scroller === null) {
+      return
+    }
+
+    const handlePointerMove = (event: globalThis.PointerEvent) => {
+      const { startX, scrollLeft } = dragStateRef.current
+      const delta = event.clientX - startX
+      if (Math.abs(delta) > 6) {
+        movedRef.current = true
+      }
+      scroller.scrollLeft = scrollLeft - delta
+    }
+
+    const endDrag = () => {
+      draggingRef.current = false
+      setIsDragging(false)
+    }
+
+    window.addEventListener('pointermove', handlePointerMove)
+    window.addEventListener('pointerup', endDrag)
+    window.addEventListener('pointercancel', endDrag)
+    return () => {
+      window.removeEventListener('pointermove', handlePointerMove)
+      window.removeEventListener('pointerup', endDrag)
+      window.removeEventListener('pointercancel', endDrag)
+    }
+  }, [isDragging])
+
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
     const scroller = scrollerRef.current
     if (scroller === null || event.button !== 0) {
@@ -59,26 +92,7 @@ export function CategoryNav({ className }: CategoryNavProps) {
     draggingRef.current = true
     movedRef.current = false
     dragStateRef.current = { startX: event.clientX, scrollLeft: scroller.scrollLeft }
-    scroller.setPointerCapture(event.pointerId)
     setIsDragging(true)
-  }
-
-  const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
-    const scroller = scrollerRef.current
-    if (scroller === null || !draggingRef.current) {
-      return
-    }
-    const { startX, scrollLeft } = dragStateRef.current
-    const delta = event.clientX - startX
-    if (Math.abs(delta) > 6) {
-      movedRef.current = true
-    }
-    scroller.scrollLeft = scrollLeft - delta
-  }
-
-  const endDrag = () => {
-    draggingRef.current = false
-    setIsDragging(false)
   }
 
   const selectCategory = (category: Category | undefined) => {
@@ -117,12 +131,9 @@ export function CategoryNav({ className }: CategoryNavProps) {
       <div
         ref={scrollerRef}
         onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={endDrag}
-        onPointerCancel={endDrag}
         className={cn(
-          'no-scrollbar flex min-w-0 flex-1 items-center gap-2 overflow-x-auto overscroll-x-contain py-1 select-none',
-          isDragging && 'cursor-grabbing',
+          'no-scrollbar flex min-w-0 flex-1 items-center gap-2 overflow-x-auto overscroll-x-contain py-1',
+          isDragging && 'cursor-grabbing select-none',
         )}
       >
         {items.map((item) => {
@@ -136,7 +147,7 @@ export function CategoryNav({ className }: CategoryNavProps) {
               aria-pressed={active}
               onClick={() => selectCategory(item.category)}
               className={cn(
-                'inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-full px-3.5 py-2 text-14 transition-colors duration-200',
+                'inline-flex shrink-0 items-center gap-2 rounded-full px-3.5 py-2 text-14 transition-colors duration-200',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background',
                 active
                   ? 'bg-accent-soft font-medium text-foreground'
