@@ -134,3 +134,17 @@
     animation: none;
   }
 }
+
+.product-visual-grid {
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      color-mix(in srgb, var(--text) 5%, transparent) 0 1px,
+      transparent 1px 8px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--text) 5%, transparent) 0 1px,
+      transparent 1px 8px
+    );
+}
