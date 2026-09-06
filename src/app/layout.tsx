@@ -1,4 +1,5 @@
 import { Outlet } from 'react-router'
+import { AppToaster } from '@/app/toaster'
 import { Footer } from '@/widgets/footer'
 import { Header } from '@/widgets/header'
 
@@ -10,6 +11,7 @@ export function AppLayout() {
         <Outlet />
       </main>
       <Footer />
+      <AppToaster />
     </div>
   )
 }
