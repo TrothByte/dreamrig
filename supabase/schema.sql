@@ -270,3 +270,64 @@ $$;
 create trigger order_items_recalc_total
   after insert or update or delete on public.order_items
   for each row execute function public.assert_order_total();
+
+-- ---------------------------------------------------------------------------
+-- Серверное создание заказа (атомарно, цены и склад — из БД)
+-- ---------------------------------------------------------------------------
+
+create or replace function public.create_order(p_customer jsonb, p_delivery jsonb, p_items jsonb)
+returns bigint
+language plpgsql
+security definer
+set search_path = public, pg_catalog
+as $$
+declare
+  v_order_id bigint;
+  v_total integer := 0;
+  v_item jsonb;
+  v_product_id uuid;
+  v_qty integer;
+  v_price integer;
+  v_stock integer;
+begin
+  if jsonb_typeof(p_customer) <> 'object' or jsonb_typeof(p_delivery) <> 'object'
+     or jsonb_typeof(p_items) <> 'array' or jsonb_array_length(p_items) = 0 then
+    raise exception 'Некорректные данные заказа';
+  end if;
+
+  insert into public.orders (customer, delivery, total)
+  values (p_customer, p_delivery, 1)
+  returning id into v_order_id;
+
+  for v_item in select * from jsonb_array_elements(p_items)
+  loop
+    v_product_id := (v_item ->> 'product_id')::uuid;
+    v_qty := (v_item ->> 'qty')::integer;
+    if v_qty is null or v_qty <= 0 then
+      raise exception 'Некорректное количество товара';
+    end if;
+
+    select price, in_stock into v_price, v_stock
+      from public.products
+     where id = v_product_id
+     for update;
+
+    if not found then
+      raise exception 'Товар не найден';
+    end if;
+    if v_qty > v_stock then
+      raise exception 'Доступно только % шт', v_stock;
+    end if;
+
+    insert into public.order_items (order_id, product_id, qty, price_at_purchase)
+    values (v_order_id, v_product_id, v_qty, v_price);
+
+    v_total := v_total + v_qty * v_price;
+  end loop;
+
+  update public.orders set total = v_total where id = v_order_id;
+  return v_order_id;
+end;
+$$;
+
+grant execute on function public.create_order(jsonb, jsonb, jsonb) to anon, authenticated;

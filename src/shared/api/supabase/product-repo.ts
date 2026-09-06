@@ -144,51 +144,32 @@ export class SupabaseProductRepository implements ProductRepository {
     }
 
     const parsed = orderPayloadSchema.parse(payload)
-    const total = parsed.items.reduce((sum, item) => sum + item.qty * item.priceAtPurchase, 0)
-    const headers = {
-      apikey: anonKey,
-      Authorization: `Bearer ${anonKey}`,
-      'Content-Type': 'application/json',
-      Prefer: 'return=representation',
-    }
-
-    const orderResponse = await fetch(`${url}/rest/v1/orders`, {
+    const response = await fetch(`${url}/rest/v1/rpc/create_order`, {
       method: 'POST',
-      headers,
+      headers: {
+        apikey: anonKey,
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({
-        customer: parsed.customer,
-        delivery: parsed.delivery,
-        total,
-        status: 'new',
+        p_customer: parsed.customer,
+        p_delivery: parsed.delivery,
+        p_items: parsed.items.map((item) => ({
+          product_id: item.productId,
+          qty: item.qty,
+        })),
       }),
     })
 
-    if (!orderResponse.ok) {
-      throw new Error(`Не удалось создать заказ: ${orderResponse.status}`)
+    if (!response.ok) {
+      const errorBody = (await response.json().catch(() => null)) as {
+        message?: string
+      } | null
+      throw new Error(`Не удалось создать заказ: ${errorBody?.message ?? response.status}`)
     }
 
-    const createdOrder = (await orderResponse.json()) as unknown
-    const orderRow = createdOrder as Record<string, unknown>
-    if (orderRow.id === undefined || orderRow.id === null) {
+    const orderId = (await response.json()) as unknown
+    if (typeof orderId !== 'number' && typeof orderId !== 'string') {
       throw new Error('Не удалось создать заказ: пустой ответ')
-    }
-    const orderId = Number(orderRow.id)
-
-    const itemsResponse = await fetch(`${url}/rest/v1/order_items`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(
-        parsed.items.map((item) => ({
-          order_id: orderId,
-          product_id: item.productId,
-          qty: item.qty,
-          price_at_purchase: item.priceAtPurchase,
-        })),
-      ),
-    })
-
-    if (!itemsResponse.ok) {
-      throw new Error(`Не удалось сохранить позиции заказа: ${itemsResponse.status}`)
     }
 
     return { id: String(orderId) }
