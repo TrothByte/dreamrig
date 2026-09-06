@@ -15,6 +15,7 @@ export function AppRouter() {
         <Route path="/" element={<HomePage />} />
         <Route path="/catalog" element={<CatalogPage />} />
         <Route path="/product/:slug" element={<ProductPage />} />
+        <Route path="/404" element={<NotFoundPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/admin" element={<AdminPage />} />
