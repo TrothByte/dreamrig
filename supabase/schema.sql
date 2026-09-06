@@ -331,3 +331,16 @@ end;
 $$;
 
 grant execute on function public.create_order(jsonb, jsonb, jsonb) to anon, authenticated;
+
+-- Проверка прав текущего пользователя (для админки)
+create or replace function public.am_i_admin()
+returns boolean
+language sql
+stable
+security definer
+set search_path = public, pg_catalog
+as $$
+  select public.is_admin();
+$$;
+
+grant execute on function public.am_i_admin() to authenticated;

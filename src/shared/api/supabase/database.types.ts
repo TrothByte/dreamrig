@@ -17,7 +17,22 @@ export interface ProductRow {
   created_at: string
 }
 
-export type ProductInsert = Omit<ProductRow, 'created_at'> & { created_at?: string }
+export type ProductInsert = {
+  id?: string
+  slug: string
+  name: string
+  brand: string
+  category: string
+  price: number
+  market_price: number
+  specs: Record<string, string>
+  in_stock: number
+  rating?: number
+  reviews_count?: number
+  description: string
+  created_at?: string
+  updated_at?: string
+}
 
 export interface ProfileRow {
   id: string

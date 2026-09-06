@@ -88,3 +88,14 @@ export class MockAuthRepository implements AuthRepository {
     }
   }
 }
+
+export function getMockProfile(): AuthProfile | null {
+  return currentProfile
+}
+
+export function isMockAdmin(): boolean {
+  return (
+    currentProfile !== null &&
+    (currentProfile.email === 'demo@dreamrig.ru' || currentProfile.email === 'admin@dreamrig.ru')
+  )
+}
