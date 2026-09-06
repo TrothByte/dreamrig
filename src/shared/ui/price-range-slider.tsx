@@ -116,10 +116,14 @@ export function PriceRangeSlider({
         onPointerDown={handleTrackPointerDown}
         className="relative h-6 cursor-pointer"
       >
-        <div className="absolute top-1/2 h-1 w-full -translate-y-1/2 rounded-full bg-surface-2" />
+        <div className="absolute top-1/2 h-1.5 w-full -translate-y-1/2 rounded-full bg-surface-2" />
         <div
-          className="absolute top-1/2 h-1 -translate-y-1/2 rounded-full bg-accent"
-          style={{ left: `${leftPercent}%`, right: `${100 - rightPercent}%` }}
+          className="absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full"
+          style={{
+            left: `${leftPercent}%`,
+            right: `${100 - rightPercent}%`,
+            backgroundColor: 'color-mix(in srgb, var(--accent) 55%, var(--surface-2))',
+          }}
         />
         {([0, 1] as const).map((index) => {
           const percent = index === 0 ? leftPercent : rightPercent
@@ -140,8 +144,8 @@ export function PriceRangeSlider({
               onPointerUp={handlePointerUp}
               onPointerCancel={handlePointerUp}
               className={cn(
-                'absolute top-1/2 size-5 -translate-x-1/2 -translate-y-1/2 cursor-grab touch-none rounded-full border-2 border-accent bg-background outline-none active:cursor-grabbing',
-                'focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+                'absolute top-1/2 size-[18px] -translate-x-1/2 -translate-y-1/2 cursor-grab touch-none rounded-full border border-border bg-surface-2 shadow-card outline-none active:cursor-grabbing',
+                'ring-1 ring-accent focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background',
                 activeIndex === index && 'z-10',
               )}
               style={{ left: `${percent}%` }}
