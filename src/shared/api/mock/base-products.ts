@@ -1,4 +1,4 @@
-import type { Category } from '@/shared/model'
+import type { Category } from '../../model/product'
 
 export interface ProductSeedOption {
   name: string
