@@ -4,6 +4,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router'
 import './index.css'
+import { QueryProvider } from '@/app/query-provider'
 import { AppRouter } from '@/app/router'
 import { ThemeProvider } from '@/app/theme-provider'
 import { getApiMode } from '@/shared/config'
@@ -31,9 +32,11 @@ void enableMocking().then(() => {
   createRoot(rootElement).render(
     <StrictMode>
       <ThemeProvider>
-        <BrowserRouter>
-          <AppRouter />
-        </BrowserRouter>
+        <QueryProvider>
+          <BrowserRouter>
+            <AppRouter />
+          </BrowserRouter>
+        </QueryProvider>
       </ThemeProvider>
     </StrictMode>,
   )
