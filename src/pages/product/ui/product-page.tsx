@@ -2,11 +2,12 @@ import { Heart, ShieldCheck, Star, Truck } from 'lucide-react'
 import { useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router'
 import { selectIsFavorite, useFavoriteStore } from '@/entities/favorite'
-import { useProduct } from '@/entities/product'
+import { useProduct, useReviews, useSimilar } from '@/entities/product'
 import { useAddToCart } from '@/features/add-to-cart'
 import { CATEGORY_LABELS, cn, discountPercent, formatPrice, useDocumentMeta } from '@/shared/lib'
-import type { Category } from '@/shared/model'
+import type { Category, Product } from '@/shared/model'
 import { Button, ProductVisual } from '@/shared/ui'
+import { ProductGrid } from '@/widgets/product-grid'
 
 const VISUAL_FILTERS = ['none', 'brightness(0.97) saturate(0.92)', 'contrast(1.06) saturate(1.04)']
 
@@ -83,6 +84,148 @@ function SpecsTable({ specs }: { specs: Record<string, string> }) {
         </tbody>
       </table>
     </div>
+  )
+}
+
+function ReviewStars({ value }: { value: number }) {
+  return (
+    <span role="img" aria-label={`Оценка ${value} из 5`} className="flex items-center gap-0.5">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Star
+          key={star}
+          aria-hidden="true"
+          strokeWidth={1.75}
+          className={cn(
+            'size-4',
+            star <= Math.round(value) ? 'fill-current text-warn' : 'fill-transparent text-muted',
+          )}
+        />
+      ))}
+    </span>
+  )
+}
+
+function getInitials(author: string): string {
+  const parts = author.trim().split(/\s+/).slice(0, 2)
+  return parts.map((part) => part.charAt(0).toUpperCase()).join('')
+}
+
+const REVIEW_DATE_FORMATTER = new Intl.DateTimeFormat('ru-RU', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+})
+
+function ReviewsSection({ slug }: { slug: string }) {
+  const { data: reviews, isPending } = useReviews(slug)
+  const list = reviews ?? []
+  const average =
+    list.length > 0 ? list.reduce((sum, review) => sum + review.rating, 0) / list.length : 0
+  const distribution = [5, 4, 3, 2, 1].map((stars) => ({
+    stars,
+    count: list.filter((review) => review.rating === stars).length,
+  }))
+
+  return (
+    <section aria-labelledby="reviews-title" className="mt-16">
+      <h2 id="reviews-title" className="text-24 font-semibold tracking-tight sm:text-32">
+        Отзывы
+      </h2>
+
+      {isPending ? (
+        <div className="mt-6 flex flex-col gap-4" aria-hidden="true">
+          {['a', 'b', 'c'].map((key) => (
+            <div key={key} className="skeleton h-28 w-full rounded-card" />
+          ))}
+        </div>
+      ) : list.length === 0 ? (
+        <p className="mt-6 text-14 text-muted">Отзывов пока нет — станьте первым.</p>
+      ) : (
+        <div className="mt-6 grid items-start gap-8 lg:grid-cols-[280px_minmax(0,1fr)]">
+          <div className="rounded-card border border-border bg-surface p-6">
+            <p className="font-mono text-40 font-semibold tabular-nums">{average.toFixed(1)}</p>
+            <ReviewStars value={average} />
+            <p className="mt-2 text-12 text-muted">На основе {list.length} отзывов</p>
+
+            <dl className="mt-5 flex flex-col gap-2">
+              {distribution.map(({ stars, count }) => {
+                const percent = list.length === 0 ? 0 : Math.round((count / list.length) * 100)
+                return (
+                  <div key={stars} className="flex items-center gap-3">
+                    <dt className="w-3 font-mono text-12 tabular-nums text-muted">{stars}</dt>
+                    <dd className="flex flex-1 items-center gap-3">
+                      <span className="h-1.5 w-full overflow-hidden rounded-full bg-surface-2">
+                        <span
+                          className="block h-full rounded-full bg-warn"
+                          style={{ width: `${percent}%` }}
+                        />
+                      </span>
+                      <span className="w-8 text-right font-mono text-12 tabular-nums text-muted">
+                        {count}
+                      </span>
+                    </dd>
+                  </div>
+                )
+              })}
+            </dl>
+          </div>
+
+          <div className="flex flex-col gap-4">
+            {list.map((review) => (
+              <article key={review.id} className="rounded-card border border-border bg-surface p-5">
+                <div className="flex items-center gap-3">
+                  <span
+                    aria-hidden="true"
+                    className="flex size-10 shrink-0 items-center justify-center rounded-full bg-surface-2 text-14 font-semibold text-foreground"
+                  >
+                    {getInitials(review.author)}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="truncate text-14 font-medium">{review.author}</p>
+                    <time className="text-12 text-muted">
+                      {REVIEW_DATE_FORMATTER.format(new Date(review.createdAt))}
+                    </time>
+                  </div>
+                  <ReviewStars value={review.rating} />
+                </div>
+                <p className="mt-3 text-14 leading-relaxed text-foreground">{review.text}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      )}
+    </section>
+  )
+}
+
+function SimilarSection({ product }: { product: Product }) {
+  const { data: similar, isPending } = useSimilar(product.slug, 4)
+  const items = similar ?? []
+
+  return (
+    <section aria-labelledby="similar-title" className="mt-16">
+      <h2 id="similar-title" className="text-24 font-semibold tracking-tight sm:text-32">
+        Похожие товары
+      </h2>
+      <div className="mt-6">
+        {isPending ? (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-hidden="true">
+            {['a', 'b', 'c', 'd'].map((key) => (
+              <div key={key} className="skeleton aspect-[3/4] rounded-card" />
+            ))}
+          </div>
+        ) : items.length === 0 ? (
+          <p className="text-14 text-muted">
+            Похожих товаров пока нет.{' '}
+            <Link to="/catalog" className="text-accent hover:underline focus-visible:outline-none">
+              Перейти в каталог
+            </Link>
+          </p>
+        ) : (
+          <ProductGrid products={items} />
+        )}
+      </div>
+    </section>
   )
 }
 
@@ -269,6 +412,9 @@ export function ProductPage() {
             <SpecsTable specs={product.specs} />
           </div>
         </section>
+
+        <ReviewsSection slug={product.slug} />
+        <SimilarSection product={product} />
       </div>
     </section>
   )
