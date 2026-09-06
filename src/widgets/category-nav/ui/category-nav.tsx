@@ -1,6 +1,11 @@
 import { ChevronLeft, ChevronRight, LayoutGrid } from 'lucide-react'
-import { type PointerEvent, useCallback, useEffect, useRef, useState } from 'react'
-import { useCatalogParams } from '@/features/product-filters'
+import { type MouseEvent, type PointerEvent, useCallback, useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router'
+import {
+  applyCatalogPatch,
+  serializeCatalogParams,
+  useCatalogParams,
+} from '@/features/product-filters'
 import { CATEGORY_LABELS, CATEGORY_ORDER, cn } from '@/shared/lib'
 import type { Category } from '@/shared/model'
 import { CATEGORY_ICONS } from '@/shared/ui'
@@ -10,7 +15,7 @@ interface CategoryNavProps {
 }
 
 export function CategoryNav({ className }: CategoryNavProps) {
-  const { params, updateParams } = useCatalogParams()
+  const { params } = useCatalogParams()
   const scrollerRef = useRef<HTMLDivElement>(null)
   const draggingRef = useRef(false)
   const movedRef = useRef(false)
@@ -95,12 +100,17 @@ export function CategoryNav({ className }: CategoryNavProps) {
     setIsDragging(true)
   }
 
-  const selectCategory = (category: Category | undefined) => {
+  const handleClickCapture = (event: MouseEvent<HTMLDivElement>) => {
     if (movedRef.current) {
+      event.preventDefault()
+      event.stopPropagation()
       movedRef.current = false
-      return
     }
-    updateParams({ category })
+  }
+
+  const hrefFor = (category: Category | undefined): string => {
+    const next = applyCatalogPatch(params, { category })
+    return `/catalog?${serializeCatalogParams(next).toString()}`
   }
 
   const items: Array<{ key: string; category?: Category }> = [
@@ -131,6 +141,7 @@ export function CategoryNav({ className }: CategoryNavProps) {
       <div
         ref={scrollerRef}
         onPointerDown={handlePointerDown}
+        onClickCapture={handleClickCapture}
         className={cn(
           'no-scrollbar flex min-w-0 flex-1 items-center gap-2 overflow-x-auto overscroll-x-contain py-1',
           isDragging && 'cursor-grabbing select-none',
@@ -141,11 +152,10 @@ export function CategoryNav({ className }: CategoryNavProps) {
           const Icon = item.category === undefined ? LayoutGrid : CATEGORY_ICONS[item.category]
           const label = item.category === undefined ? 'Все' : CATEGORY_LABELS[item.category]
           return (
-            <button
+            <Link
               key={item.key}
-              type="button"
-              aria-pressed={active}
-              onClick={() => selectCategory(item.category)}
+              to={hrefFor(item.category)}
+              aria-current={active ? 'page' : undefined}
               className={cn(
                 'inline-flex shrink-0 items-center gap-2 rounded-full px-3.5 py-2 text-14 transition-colors duration-200',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background',
@@ -160,7 +170,7 @@ export function CategoryNav({ className }: CategoryNavProps) {
                 className={cn('size-4', active && 'text-accent')}
               />
               {label}
-            </button>
+            </Link>
           )
         })}
       </div>
