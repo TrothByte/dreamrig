@@ -56,6 +56,10 @@ export class SupabaseAuthRepository implements AuthRepository {
     if (error !== null) {
       throw toFriendlyError(error)
     }
+    if (data.session === null) {
+      // Email-подтверждение включено в проекте: аккаунт создан, но сессии нет
+      return null
+    }
     return profileFromUser(data.user ?? null)
   }
 

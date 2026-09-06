@@ -24,6 +24,19 @@ begin
 end;
 $$;
 
+-- ---------------------------------------------------------------------------
+-- Сотрудники (админка)
+-- ---------------------------------------------------------------------------
+
+create table if not exists public.staff (
+  email citext primary key,
+  role text not null default 'admin' check (role in ('admin', 'manager')),
+  active boolean not null default true,
+  created_at timestamptz not null default now()
+);
+
+comment on table public.staff is 'Сотрудники с правами администрирования (RLS: is_admin())';
+
 -- Администратор определяется через отдельную таблицу staff (а не хардкод в политиках)
 create or replace function public.is_admin()
 returns boolean
@@ -40,19 +53,6 @@ as $$
       and active
   );
 $$;
-
--- ---------------------------------------------------------------------------
--- Сотрудники (админка)
--- ---------------------------------------------------------------------------
-
-create table if not exists public.staff (
-  email citext primary key,
-  role text not null default 'admin' check (role in ('admin', 'manager')),
-  active boolean not null default true,
-  created_at timestamptz not null default now()
-);
-
-comment on table public.staff is 'Сотрудники с правами администрирования (RLS: is_admin())';
 
 -- ---------------------------------------------------------------------------
 -- Профили пользователей
