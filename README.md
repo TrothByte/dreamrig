@@ -1,32 +1,46 @@
-# React + TypeScript + Vite
+# DreamRig
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Интернет-магазин компьютерного железа и периферии. Товары продаются ниже среднерыночной цены: у каждой позиции своя цена и рыночная цена со скидкой.
 
-Currently, two official plugins are available:
+[![CI](https://github.com/TrothByte/dreamrig/actions/workflows/ci.yml/badge.svg)](https://github.com/TrothByte/dreamrig/actions/workflows/ci.yml)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Живой сайт
 
-## React Compiler
+https://trothbyte.github.io/dreamrig/
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Стек
 
-## Expanding the Oxlint configuration
+- React 19, TypeScript (strict), Vite
+- Tailwind CSS v4, shadcn/ui
+- TanStack Query v5, Zustand, react-router
+- MSW + Supabase (два источника данных за единым zod-контрактом)
+- Biome (lint + format), Vitest, Playwright
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+## Запуск
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+pnpm install
+pnpm dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Проверка перед коммитом:
+
+```bash
+pnpm check
+pnpm test --run
+pnpm build
+```
+
+## Переменные окружения
+
+Скопируйте `.env.example` в `.env` и при необходимости переключите источник данных:
+
+```
+VITE_API_MODE=mock
+```
+
+`mock` — встроенные моки (MSW), `supabase` — живая база Postgres.
+
+## Структура
+
+Проект следует Feature-Sliced Design: `app → pages → widgets → features → entities → shared`. Подробности — в `docs/Agent.md`.
