@@ -9,6 +9,7 @@
   --surface-2: #1c1c21;
   --surface-hover: #26262c;
   --border: rgb(255 255 255 / 0.08);
+  --border-strong: rgb(255 255 255 / 0.16);
   --text: #f4f4f5;
   --muted: #8b8b93;
   --accent: #a3e635;
@@ -25,6 +26,7 @@
   --surface-2: #f4f4f5;
   --surface-hover: #e8e8eb;
   --border: rgb(0 0 0 / 0.08);
+  --border-strong: rgb(0 0 0 / 0.16);
   --text: #18181b;
   --muted: #71717a;
   --accent: #a3e635;
@@ -71,6 +73,7 @@
   --color-surface-2: var(--surface-2);
   --color-surface-hover: var(--surface-hover);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-foreground: var(--text);
   --color-muted: var(--muted);
   --color-accent: var(--accent);
