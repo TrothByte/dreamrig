@@ -1,4 +1,11 @@
-import { ChevronLeft, ChevronRight, PackageSearch, SlidersHorizontal, X } from 'lucide-react'
+import {
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  PackageSearch,
+  SlidersHorizontal,
+  X,
+} from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router'
 import { useProducts } from '@/entities/product'
@@ -6,6 +13,7 @@ import { toProductQueryParams, useCatalogParams } from '@/features/product-filte
 import type { ProductSort } from '@/shared/api/product-repo'
 import { CATEGORY_LABELS } from '@/shared/lib'
 import { Button } from '@/shared/ui'
+import { CategoryNav } from '@/widgets/category-nav'
 import { FiltersPanel } from '@/widgets/filters-panel'
 import { ProductGrid } from '@/widgets/product-grid'
 
@@ -158,106 +166,125 @@ export function CatalogPage() {
   const items = data?.items ?? []
   const pageSize = 24
   const pageCount = Math.ceil(total / pageSize)
+  const currentSortLabel = SORT_OPTIONS.find((option) => option.value === params.sort)?.label
 
   return (
-    <section className="px-4 py-8 sm:px-6 sm:py-10">
+    <section className="px-4 py-6 sm:px-6 sm:py-8">
       <div className="mx-auto w-full max-w-7xl">
         <Breadcrumbs categoryLabel={categoryLabel} />
 
-        <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
+        <div className="mt-5 rounded-card border border-border bg-surface p-2">
+          <CategoryNav />
+        </div>
+
+        <div className="mt-6 flex flex-col gap-2">
           <h1 className="text-24 font-semibold tracking-tight sm:text-32">
             {categoryLabel ?? 'Каталог'}
           </h1>
-          <p className="font-mono text-14 tabular-nums text-muted">
-            {isPending ? '…' : `Найдено ${total} товаров`}
-          </p>
-        </div>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-14 text-muted">
+              Найдено:{' '}
+              <span className="font-mono tabular-nums text-foreground">
+                {isPending ? '…' : total}
+              </span>{' '}
+              товаров
+            </p>
 
-        <div className="mt-6 flex flex-col gap-8 lg:flex-row">
-          <aside className="hidden w-60 shrink-0 lg:block" aria-label="Фильтры">
-            <div className="sticky top-24">
-              <FiltersPanel />
-            </div>
-          </aside>
-
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center justify-between gap-3">
-              <div className="relative w-full max-w-56">
-                <label htmlFor="catalog-sort" className="sr-only">
-                  Сортировка
-                </label>
-                <select
-                  id="catalog-sort"
-                  value={params.sort}
-                  onChange={(event) => updateParams({ sort: event.target.value as ProductSort })}
-                  className="w-full appearance-none rounded-btn border border-border bg-surface-2 px-3 py-2 pr-9 text-14 text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                >
-                  {SORT_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-                <ChevronRight
-                  aria-hidden="true"
-                  strokeWidth={1.75}
-                  className="pointer-events-none absolute right-3 top-1/2 size-4 -rotate-90 text-muted"
-                />
-              </div>
-
+            <div className="flex flex-wrap items-center gap-2">
               <Button
                 type="button"
                 variant="secondary"
+                size="sm"
                 className="lg:hidden"
                 onClick={() => setFiltersOpen(true)}
               >
                 <SlidersHorizontal aria-hidden="true" strokeWidth={1.75} className="size-4" />
                 Фильтры
+                {hasActiveFilters && (
+                  <span className="size-1.5 rounded-full bg-accent" aria-hidden="true" />
+                )}
               </Button>
-            </div>
 
-            <div className="mt-6">
-              {isPending ? (
-                <ProductGridSkeleton />
-              ) : isError ? (
-                <div className="flex flex-col items-center justify-center gap-4 py-24 text-center">
-                  <h2 className="text-20 font-semibold tracking-tight">
-                    Не удалось загрузить каталог
-                  </h2>
-                  <p className="max-w-md text-14 text-muted">
-                    Проверьте соединение и попробуйте ещё раз.
-                  </p>
-                  <Button onClick={() => void refetch()}>Повторить</Button>
-                </div>
-              ) : items.length === 0 ? (
-                <div className="flex flex-col items-center justify-center gap-3 py-24 text-center">
-                  <PackageSearch
+              <div className="flex items-center gap-2">
+                <label htmlFor="catalog-sort" className="hidden text-14 text-muted md:inline">
+                  Сортировка:
+                </label>
+                <div className="relative">
+                  <select
+                    id="catalog-sort"
+                    value={params.sort}
+                    onChange={(event) => updateParams({ sort: event.target.value as ProductSort })}
+                    className="w-full cursor-pointer appearance-none rounded-btn border border-border bg-surface px-3 py-2 pr-9 text-14 text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:w-auto"
+                  >
+                    {SORT_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown
                     aria-hidden="true"
                     strokeWidth={1.75}
-                    className="size-12 text-muted"
+                    className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted"
                   />
-                  <h2 className="text-20 font-semibold tracking-tight">Ничего не найдено</h2>
-                  <p className="max-w-md text-14 text-muted">
-                    Попробуйте смягчить фильтры или сбросить их.
-                  </p>
-                  <Button
-                    variant="secondary"
-                    onClick={hasActiveFilters ? resetFilters : () => updateParams({ page: 1 })}
-                  >
-                    {hasActiveFilters ? 'Сбросить фильтры' : 'К началу каталога'}
-                  </Button>
                 </div>
-              ) : (
-                <>
-                  <ProductGrid products={items} className="lg:grid-cols-3 xl:grid-cols-4" />
-                  <Pagination
-                    current={params.page}
-                    pageCount={pageCount}
-                    onPageChange={(page) => updateParams({ page }, false)}
-                  />
-                </>
-              )}
+              </div>
             </div>
+          </div>
+        </div>
+
+        <div className="mt-8 grid items-start gap-8 lg:grid-cols-[230px_minmax(0,1fr)] lg:gap-10">
+          <aside className="hidden lg:block">
+            <div className="sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto scrollbar-thin rounded-card border border-border bg-surface p-5">
+              <FiltersPanel />
+            </div>
+          </aside>
+
+          <div className="min-w-0">
+            {isPending ? (
+              <ProductGridSkeleton />
+            ) : isError ? (
+              <div className="flex flex-col items-center justify-center gap-4 py-24 text-center">
+                <h2 className="text-20 font-semibold tracking-tight">
+                  Не удалось загрузить каталог
+                </h2>
+                <p className="max-w-md text-14 text-muted">
+                  Проверьте соединение и попробуйте ещё раз.
+                </p>
+                <Button onClick={() => void refetch()}>Повторить</Button>
+              </div>
+            ) : items.length === 0 ? (
+              <div className="flex flex-col items-center justify-center gap-3 py-24 text-center">
+                <PackageSearch
+                  aria-hidden="true"
+                  strokeWidth={1.75}
+                  className="size-12 text-muted"
+                />
+                <h2 className="text-20 font-semibold tracking-tight">Ничего не найдено</h2>
+                <p className="max-w-md text-14 text-muted">
+                  Попробуйте смягчить фильтры или сбросить их.
+                </p>
+                <Button
+                  variant="secondary"
+                  onClick={hasActiveFilters ? resetFilters : () => updateParams({ page: 1 })}
+                >
+                  {hasActiveFilters ? 'Сбросить фильтры' : 'К началу каталога'}
+                </Button>
+              </div>
+            ) : (
+              <>
+                <p className="sr-only">
+                  Показаны товары: сортировка «{currentSortLabel}», страница {params.page} из{' '}
+                  {pageCount}
+                </p>
+                <ProductGrid products={items} className="lg:grid-cols-3 xl:grid-cols-4" />
+                <Pagination
+                  current={params.page}
+                  pageCount={pageCount}
+                  onPageChange={(page) => updateParams({ page }, false)}
+                />
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -272,11 +299,11 @@ export function CatalogPage() {
           <button
             type="button"
             aria-label="Закрыть фильтры"
-            className="absolute inset-0 bg-black/50"
+            className="absolute inset-0 bg-black/60"
             onClick={() => setFiltersOpen(false)}
           />
           <div className="absolute inset-x-0 bottom-0 max-h-[85vh] overflow-y-auto rounded-t-2xl border-t border-border bg-background p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))]">
-            <div className="mb-4 flex items-center justify-between">
+            <div className="mb-5 flex items-center justify-between">
               <h2 className="text-20 font-semibold tracking-tight">Фильтры</h2>
               <Button
                 type="button"

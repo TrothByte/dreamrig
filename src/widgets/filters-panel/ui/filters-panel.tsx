@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useCatalogFacets, useCatalogParams } from '@/features/product-filters'
-import { CATEGORY_LABELS, CATEGORY_ORDER, cn, formatPrice } from '@/shared/lib'
-import type { Category } from '@/shared/model'
-import { Button, CATEGORY_ICONS, PriceRangeSlider } from '@/shared/ui'
+import { cn, formatPrice } from '@/shared/lib'
+import { Button, PriceRangeSlider } from '@/shared/ui'
 
 function FiltersSectionTitle({ children }: { children: string }) {
   return <h2 className="text-12 font-medium uppercase tracking-widest text-muted">{children}</h2>
@@ -28,10 +27,6 @@ export function FiltersPanel({ className }: { className?: string }) {
     })
   }
 
-  const toggleCategory = (category: Category) => {
-    updateParams({ category: params.category === category ? undefined : category })
-  }
-
   const toggleBrand = (brand: string) => {
     const brands = params.brands.includes(brand)
       ? params.brands.filter((item) => item !== brand)
@@ -39,43 +34,29 @@ export function FiltersPanel({ className }: { className?: string }) {
     updateParams({ brands })
   }
 
-  const skeletonRows = useMemo(() => ['a', 'b', 'c', 'd', 'e'], [])
+  const skeletonRows = useMemo(() => ['a', 'b', 'c', 'd'], [])
 
   return (
-    <aside className={cn('flex flex-col gap-8', className)} aria-label="Фильтры каталога">
+    <aside className={cn('flex flex-col gap-7', className)} aria-label="Фильтры каталога">
       <section className="flex flex-col gap-3">
-        <FiltersSectionTitle>Категории</FiltersSectionTitle>
-        <fieldset className="flex gap-2 overflow-x-auto pb-1">
-          <legend className="sr-only">Категории</legend>
-          {CATEGORY_ORDER.map((category) => {
-            const Icon = CATEGORY_ICONS[category]
-            const active = params.category === category
-            return (
-              <button
-                key={category}
-                type="button"
-                onClick={() => toggleCategory(category)}
-                aria-pressed={active}
-                className={cn(
-                  'inline-flex shrink-0 items-center gap-2 rounded-full px-3 py-2 text-14 font-medium transition-colors duration-200',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-                  active
-                    ? 'bg-accent text-accent-fg'
-                    : 'bg-surface-2 text-muted hover:bg-surface-hover hover:text-foreground',
-                )}
-              >
-                <Icon aria-hidden="true" strokeWidth={1.75} className="size-4" />
-                {CATEGORY_LABELS[category]}
-              </button>
-            )
-          })}
-        </fieldset>
+        <FiltersSectionTitle>Цена</FiltersSectionTitle>
+        <PriceRangeSlider
+          min={facets.priceMin}
+          max={facets.priceMax}
+          value={priceDraft}
+          onChange={setPriceDraft}
+          onCommit={handlePriceCommit}
+        />
+        <div className="flex items-center justify-between font-mono text-12 tabular-nums text-muted">
+          <span>{formatPrice(priceDraft[0])}</span>
+          <span>{formatPrice(priceDraft[1])}</span>
+        </div>
       </section>
 
       <section className="flex flex-col gap-3">
         <FiltersSectionTitle>Бренды</FiltersSectionTitle>
         {boundsReady ? (
-          <div className="flex max-h-56 flex-col gap-1 overflow-y-auto pr-1">
+          <div className="flex max-h-64 flex-col gap-1 overflow-y-auto scrollbar-thin pr-1">
             {facets.brands.map((brand) => {
               const checked = params.brands.includes(brand)
               return (
@@ -103,21 +84,6 @@ export function FiltersPanel({ className }: { className?: string }) {
         )}
       </section>
 
-      <section className="flex flex-col gap-4">
-        <FiltersSectionTitle>Цена</FiltersSectionTitle>
-        <PriceRangeSlider
-          min={facets.priceMin}
-          max={facets.priceMax}
-          value={priceDraft}
-          onChange={setPriceDraft}
-          onCommit={handlePriceCommit}
-        />
-        <div className="flex items-center justify-between font-mono text-12 tabular-nums text-muted">
-          <span>{formatPrice(priceDraft[0])}</span>
-          <span>{formatPrice(priceDraft[1])}</span>
-        </div>
-      </section>
-
       <label className="flex cursor-pointer items-center justify-between gap-4">
         <span className="text-14 font-medium">Только в наличии</span>
         <input
@@ -134,9 +100,17 @@ export function FiltersPanel({ className }: { className?: string }) {
         />
       </label>
 
-      <Button type="button" variant="secondary" onClick={resetFilters} disabled={!hasActiveFilters}>
-        Сбросить фильтры
-      </Button>
+      {hasActiveFilters && (
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={resetFilters}
+          className="justify-start text-muted hover:text-foreground"
+        >
+          Сбросить фильтры
+        </Button>
+      )}
     </aside>
   )
 }
