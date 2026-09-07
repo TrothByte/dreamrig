@@ -4,38 +4,46 @@
 
 :root {
   color-scheme: dark;
-  --bg: #0a0a0b;
-  --surface: #141417;
-  --surface-2: #1c1c21;
-  --surface-hover: #26262c;
-  --border: rgb(255 255 255 / 0.08);
-  --border-strong: rgb(255 255 255 / 0.16);
-  --text: #f4f4f5;
-  --muted: #8b8b93;
+  --bg: #0d0d10;
+  --surface: #16161a;
+  --surface-2: #1f1f25;
+  --surface-hover: #2a2a32;
+  --border: rgb(255 255 255 / 0.09);
+  --border-strong: rgb(255 255 255 / 0.18);
+  --text: #f3f4f6;
+  --muted: #9aa0a8;
   --accent: #a3e635;
-  --accent-soft: rgb(163 230 53 / 0.12);
+  --accent-soft: rgb(163 230 53 / 0.13);
+  --accent-hover: #b8f04d;
+  --accent-active: #8fd428;
+  --accent-fg: #0b0b0c;
   --success: #4ade80;
   --danger: #f87171;
   --danger-hover: #ef4444;
   --warn: #fbbf24;
+  --shadow-card-value: 0 1px 0 rgb(255 255 255 / 0.03), 0 20px 50px -20px rgb(0 0 0 / 0.5);
 }
 
 .light {
   color-scheme: light;
-  --bg: #fafafa;
+  --bg: #f4f4f1;
   --surface: #ffffff;
-  --surface-2: #f4f4f5;
-  --surface-hover: #e8e8eb;
-  --border: rgb(0 0 0 / 0.08);
-  --border-strong: rgb(0 0 0 / 0.16);
-  --text: #18181b;
-  --muted: #71717a;
-  --accent: #a3e635;
-  --accent-soft: rgb(163 230 53 / 0.2);
-  --success: #16a34a;
-  --danger: #dc2626;
-  --danger-hover: #b91c1c;
-  --warn: #d97706;
+  --surface-2: #ecece7;
+  --surface-hover: #e2e2db;
+  --border: rgb(25 27 22 / 0.12);
+  --border-strong: rgb(25 27 22 / 0.22);
+  --text: #1a1b1e;
+  --muted: #5f6269;
+  --accent: #52780c;
+  --accent-soft: rgb(82 120 12 / 0.14);
+  --accent-hover: #466a0a;
+  --accent-active: #3a5b07;
+  --accent-fg: #ffffff;
+  --success: #15803d;
+  --danger: #d92d20;
+  --danger-hover: #ba2217;
+  --warn: #b45309;
+  --shadow-card-value: 0 1px 2px rgb(24 28 20 / 0.05), 0 18px 40px -22px rgb(24 28 20 / 0.25);
 }
 
 @theme {
@@ -62,11 +70,6 @@
   --radius-btn: 0.625rem;
   --radius-card: 0.75rem;
   --radius-card-lg: 1rem;
-
-  --shadow-card: 0 8px 24px rgb(0 0 0 / 0.35);
-  --shadow-glow: 0 0 24px var(--accent-soft);
-
-  --color-accent-fg: #0b0b0c;
 }
 
 @theme inline {
@@ -80,10 +83,14 @@
   --color-muted: var(--muted);
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-active: var(--accent-active);
+  --color-accent-fg: var(--accent-fg);
   --color-success: var(--success);
   --color-danger: var(--danger);
   --color-danger-hover: var(--danger-hover);
   --color-warn: var(--warn);
+  --shadow-card: var(--shadow-card-value);
 }
 
 @layer base {
@@ -107,6 +114,11 @@
     background-color: var(--bg);
     color: var(--text);
     font-family: var(--font-sans);
+  }
+
+  h1,
+  h2 {
+    text-wrap: balance;
   }
 
   ::selection {
@@ -284,6 +296,22 @@
       color-mix(in srgb, var(--text) 5%, transparent) 0 1px,
       transparent 1px 8px
     );
+}
+
+.hero-grid {
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      color-mix(in srgb, var(--text) 3.5%, transparent) 0 1px,
+      transparent 1px 48px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--text) 3.5%, transparent) 0 1px,
+      transparent 1px 48px
+    );
+  -webkit-mask-image: radial-gradient(72% 64% at 50% 0%, #000 24%, transparent 78%);
+  mask-image: radial-gradient(72% 64% at 50% 0%, #000 24%, transparent 78%);
 }
 
 .no-scrollbar {
