@@ -79,12 +79,21 @@ export function FavoritesPage() {
 
         <div className="mt-8">
           {ids.length === 0 ? (
-            <div className="flex flex-col items-center justify-center gap-3 py-24 text-center">
-              <Heart aria-hidden="true" strokeWidth={1.5} className="size-12 text-muted" />
-              <h2 className="text-20 font-semibold tracking-tight">Пока ничего не сохранено</h2>
-              <p className="max-w-md text-14 text-muted">
-                Нажимайте на сердечко в карточках товаров, чтобы собрать список желаемого.
-              </p>
+            <div className="flex flex-col items-center justify-center gap-5 py-24 text-center">
+              <span
+                aria-hidden="true"
+                className="flex size-16 items-center justify-center rounded-2xl border border-border bg-surface"
+              >
+                <Heart strokeWidth={1.5} className="size-7 text-muted" />
+              </span>
+              <div className="flex flex-col gap-2">
+                <h2 className="text-20 font-semibold tracking-tight sm:text-24">
+                  Пока ничего не сохранено
+                </h2>
+                <p className="max-w-md text-14 text-muted">
+                  Нажимайте на сердечко в карточках товаров, чтобы собрать список желаемого.
+                </p>
+              </div>
               <Button asChild>
                 <Link to="/catalog">Перейти в каталог</Link>
               </Button>

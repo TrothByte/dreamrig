@@ -15,12 +15,11 @@ import { Button } from '@/shared/ui'
 
 const navItemClass = ({ isActive }: { isActive: boolean }) =>
   cn(
-    'flex min-h-10 items-center rounded-btn px-3 text-14 font-medium',
+    'relative flex min-h-10 items-center rounded-btn px-3 text-14 font-medium transition-colors duration-200',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background',
     isActive
-      ? 'text-foreground'
-      : 'text-muted transition-colors duration-200 hover:text-foreground',
-    isActive && 'shadow-[inset_0_-2px_0_0_var(--accent)]',
+      ? 'bg-surface-2 text-foreground shadow-[inset_0_-1.5px_0_0_var(--accent)]'
+      : 'text-muted hover:bg-surface-2/70 hover:text-foreground',
   )
 
 export function Header() {

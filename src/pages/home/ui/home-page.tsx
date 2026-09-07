@@ -67,34 +67,50 @@ export function HomePage() {
 
   return (
     <div>
-      <section className="px-4 pb-20 pt-16 sm:px-6 sm:pb-24 sm:pt-20">
-        <div className="mx-auto flex w-full max-w-3xl flex-col items-center text-center">
-          <h1 className="text-32 font-semibold leading-tight tracking-tight sm:text-40">
+      <section className="relative overflow-hidden px-4 pb-24 pt-24 sm:px-6 sm:pb-28 sm:pt-28">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+          <div className="hero-grid absolute inset-x-0 -top-24 h-[600px] opacity-70" />
+          <div
+            className="absolute left-1/2 top-[-360px] h-[620px] w-[min(960px,100%)] -translate-x-1/2 rounded-full opacity-60"
+            style={{
+              background: 'radial-gradient(closest-side, var(--accent-soft), transparent 70%)',
+            }}
+          />
+        </div>
+
+        <div className="relative mx-auto flex w-full max-w-3xl flex-col items-center text-center">
+          <span className="flex items-center gap-2 rounded-full border border-border bg-surface/80 px-3.5 py-1.5 font-mono text-12 uppercase tracking-[0.18em] text-muted backdrop-blur-sm">
+            <span aria-hidden="true" className="size-1.5 rounded-full bg-accent" />
+            Комплектующие и периферия
+          </span>
+          <h1 className="mt-7 text-balance text-40 font-semibold leading-[1.05] tracking-[-0.03em] sm:text-[3.5rem]">
             Компьютерное железо по цене ниже среднерыночной
           </h1>
-          <p className="mt-5 max-w-2xl text-16 leading-relaxed text-muted sm:text-20">
+          <p className="mt-6 max-w-2xl text-16 leading-relaxed text-muted sm:text-20">
             Видеокарты, процессоры, память и периферия. У каждого товара своя цена и честная скидка
             относительно рынка — без распродаж-фикций.
           </p>
-          <Button asChild size="lg" className="mt-8">
+          <Button asChild size="lg" className="mt-10">
             <Link to="/catalog">
               Перейти в каталог
               <ArrowRight aria-hidden="true" strokeWidth={1.75} />
             </Link>
           </Button>
 
-          <dl className="mt-12 flex items-center justify-center gap-10 sm:gap-16">
-            <div className="flex flex-col items-center gap-1">
-              <dt className="text-12 uppercase tracking-widest text-muted">Товаров</dt>
-              <dd className="font-mono text-24 font-semibold tabular-nums sm:text-32">
+          <dl className="mt-14 flex items-center divide-x divide-border overflow-hidden rounded-card border border-border bg-surface/70 backdrop-blur-sm">
+            <div className="flex flex-col items-center gap-1.5 px-8 py-4 sm:px-12">
+              <dd className="order-2 font-mono text-24 font-semibold tabular-nums sm:text-32">
                 {isPending ? '—' : `${metrics.total}+`}
               </dd>
+              <dt className="order-1 text-12 uppercase tracking-widest text-muted">Товаров</dt>
             </div>
-            <div className="flex flex-col items-center gap-1">
-              <dt className="text-12 uppercase tracking-widest text-muted">К рынку в среднем</dt>
-              <dd className="font-mono text-24 font-semibold tabular-nums sm:text-32">
+            <div className="flex flex-col items-center gap-1.5 px-8 py-4 sm:px-12">
+              <dd className="order-2 font-mono text-24 font-semibold tabular-nums sm:text-32">
                 {isPending ? '—' : `−${metrics.averageDiscount}%`}
               </dd>
+              <dt className="order-1 text-12 uppercase tracking-widest text-muted">
+                К рынку в среднем
+              </dt>
             </div>
           </dl>
         </div>
@@ -102,9 +118,17 @@ export function HomePage() {
 
       <section className="px-4 pb-20 sm:px-6 sm:pb-24" aria-labelledby="categories-title">
         <div className="mx-auto w-full max-w-7xl">
-          <h2 id="categories-title" className="text-24 font-semibold tracking-tight sm:text-32">
-            Каталог по категориям
-          </h2>
+          <div className="flex items-end justify-between gap-4">
+            <h2 id="categories-title" className="text-24 font-semibold tracking-tight sm:text-32">
+              Каталог по категориям
+            </h2>
+            <Link
+              to="/catalog"
+              className="rounded-btn text-14 font-medium text-accent hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            >
+              Весь каталог
+            </Link>
+          </div>
           <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {CATEGORY_ORDER.map((category) => {
               const Icon = CATEGORY_ICONS[category]
@@ -112,16 +136,30 @@ export function HomePage() {
                 <Link
                   key={category}
                   to={`/catalog?category=${category}`}
-                  className="group flex items-center gap-4 rounded-card border border-border bg-surface p-5 transition-transform duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background hover:-translate-y-0.5 hover:shadow-card active:scale-[0.99]"
+                  className="group flex items-center gap-4 rounded-card border border-border bg-surface p-5 transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background hover:-translate-y-0.5 hover:border-border-strong hover:shadow-card active:scale-[0.99]"
                 >
-                  <span className="rounded-[10px] bg-accent-soft p-3">
+                  <span className="relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-[10px] border border-border/80 bg-surface-2">
+                    <span
+                      aria-hidden="true"
+                      className="product-visual-grid absolute inset-0 opacity-70"
+                    />
                     <Icon
                       aria-hidden="true"
-                      strokeWidth={1.75}
-                      className="size-5 text-accent transition-transform duration-200 ease-out group-hover:scale-110"
+                      strokeWidth={1.5}
+                      className="relative size-5 text-foreground/75 transition-colors duration-200 group-hover:text-accent"
                     />
                   </span>
-                  <span className="text-16 font-medium">{CATEGORY_LABELS[category]}</span>
+                  <span className="flex min-w-0 flex-col items-start gap-1">
+                    <span className="text-16 font-medium">{CATEGORY_LABELS[category]}</span>
+                    <span className="flex items-center gap-1 font-mono text-[11px] uppercase tracking-[0.16em] text-muted transition-colors duration-200 group-hover:text-foreground">
+                      Перейти
+                      <ArrowRight
+                        aria-hidden="true"
+                        strokeWidth={1.75}
+                        className="size-3 transition-transform duration-200 group-hover:translate-x-0.5"
+                      />
+                    </span>
+                  </span>
                 </Link>
               )
             })}

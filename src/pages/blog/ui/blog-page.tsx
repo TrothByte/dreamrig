@@ -115,21 +115,39 @@ export function BlogPage() {
           {isPending ? (
             <ArticleGridSkeleton count={6} />
           ) : isError ? (
-            <div className="flex flex-col items-center justify-center gap-4 py-24 text-center">
-              <Newspaper aria-hidden="true" strokeWidth={1.75} className="size-12 text-muted" />
-              <h2 className="text-20 font-semibold tracking-tight">Не удалось загрузить статьи</h2>
-              <p className="max-w-md text-14 text-muted">
-                Проверьте соединение и попробуйте ещё раз.
-              </p>
+            <div className="flex flex-col items-center justify-center gap-5 py-24 text-center">
+              <span
+                aria-hidden="true"
+                className="flex size-16 items-center justify-center rounded-2xl border border-border bg-surface"
+              >
+                <Newspaper strokeWidth={1.5} className="size-7 text-muted" />
+              </span>
+              <div className="flex flex-col gap-2">
+                <h2 className="text-20 font-semibold tracking-tight sm:text-24">
+                  Не удалось загрузить статьи
+                </h2>
+                <p className="max-w-md text-14 text-muted">
+                  Проверьте соединение и попробуйте ещё раз.
+                </p>
+              </div>
               <Button onClick={() => void refetch()}>Повторить</Button>
             </div>
           ) : items.length === 0 ? (
-            <div className="flex flex-col items-center justify-center gap-3 py-24 text-center">
-              <BookOpen aria-hidden="true" strokeWidth={1.75} className="size-12 text-muted" />
-              <h2 className="text-20 font-semibold tracking-tight">В этой рубрике пока пусто</h2>
-              <p className="max-w-md text-14 text-muted">
-                Редакция готовит новые материалы. Загляните в другие рубрики блога.
-              </p>
+            <div className="flex flex-col items-center justify-center gap-5 py-24 text-center">
+              <span
+                aria-hidden="true"
+                className="flex size-16 items-center justify-center rounded-2xl border border-border bg-surface"
+              >
+                <BookOpen strokeWidth={1.5} className="size-7 text-muted" />
+              </span>
+              <div className="flex flex-col gap-2">
+                <h2 className="text-20 font-semibold tracking-tight sm:text-24">
+                  В этой рубрике пока пусто
+                </h2>
+                <p className="max-w-md text-14 text-muted">
+                  Редакция готовит новые материалы. Загляните в другие рубрики блога.
+                </p>
+              </div>
               {rubric !== undefined && (
                 <Button variant="secondary" onClick={() => handleRubricChange(undefined)}>
                   Все статьи

@@ -286,10 +286,17 @@ export function CheckoutPage() {
 
   if (lines.length === 0) {
     return (
-      <section className="flex flex-1 flex-col items-center justify-center gap-4 px-6 py-20 text-center">
-        <ShoppingCart aria-hidden="true" strokeWidth={1.75} className="size-12 text-muted" />
-        <h1 className="text-24 font-semibold tracking-tight">В корзине пусто</h1>
-        <p className="max-w-md text-14 text-muted">Добавьте товары, чтобы оформить заказ.</p>
+      <section className="flex flex-1 flex-col items-center justify-center gap-5 px-6 py-20 text-center">
+        <span
+          aria-hidden="true"
+          className="flex size-16 items-center justify-center rounded-2xl border border-border bg-surface"
+        >
+          <ShoppingCart strokeWidth={1.5} className="size-7 text-muted" />
+        </span>
+        <div className="flex flex-col gap-2">
+          <h1 className="text-24 font-semibold tracking-tight sm:text-32">В корзине пусто</h1>
+          <p className="max-w-md text-14 text-muted">Добавьте товары, чтобы оформить заказ.</p>
+        </div>
         <Button asChild>
           <Link to="/cart">Вернуться в корзину</Link>
         </Button>

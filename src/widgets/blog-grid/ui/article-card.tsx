@@ -29,13 +29,13 @@ export function ArticleCard({ article, className }: ArticleCardProps) {
             alt=""
             loading="lazy"
             decoding="async"
-            className="absolute inset-0 h-full w-full object-cover transition-transform duration-200 ease-out group-hover:scale-[1.03]"
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.03]"
           />
         </div>
 
         <div className="flex flex-col gap-3 p-5">
-          <div className="flex flex-wrap items-center gap-2 text-12">
-            <span className="rounded-full bg-accent-soft px-2.5 py-0.5 font-medium text-accent">
+          <div className="flex flex-wrap items-center gap-2.5 text-12">
+            <span className="rounded-md bg-accent-soft px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-accent">
               {ARTICLE_RUBRIC_LABELS[article.rubric]}
             </span>
             <time className="font-mono tabular-nums text-muted">
@@ -43,7 +43,7 @@ export function ArticleCard({ article, className }: ArticleCardProps) {
             </time>
           </div>
 
-          <h3 className="line-clamp-2 text-16 font-medium leading-snug sm:text-20 sm:leading-snug">
+          <h3 className="line-clamp-2 text-16 font-semibold leading-snug tracking-tight sm:text-20 sm:leading-snug">
             {article.title}
           </h3>
 

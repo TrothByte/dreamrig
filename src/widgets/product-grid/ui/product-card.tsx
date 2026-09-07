@@ -55,8 +55,8 @@ export function ProductCard({ product, className }: ProductCardProps) {
         to={`/product/${product.slug}`}
         className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
       >
-        <div className="p-3 pb-0">
-          <ProductVisual category={product.category} className="w-full rounded-[10px]" />
+        <div className="relative border-b border-border/80">
+          <ProductVisual category={product.category} meta className="w-full" />
         </div>
 
         <div className="flex flex-col gap-2 px-5 pb-2 pt-4">
@@ -109,7 +109,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
               {formatPrice(product.marketPrice)}
             </span>
             {discount > 0 && (
-              <span className="rounded-full bg-surface-2 px-2 py-0.5 font-mono text-12 tabular-nums font-medium text-accent">
+              <span className="rounded-full bg-accent-soft px-2 py-0.5 font-mono text-12 font-semibold tabular-nums text-accent">
                 −{discount}%
               </span>
             )}
