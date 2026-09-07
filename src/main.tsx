@@ -16,6 +16,9 @@ if (rootElement === null) {
   throw new Error('Корневой элемент #root не найден')
 }
 
+const rawBaseUrl = import.meta.env.BASE_URL
+const routerBasename = rawBaseUrl === '/' ? undefined : rawBaseUrl.replace(/\/$/, '')
+
 async function enableMocking(): Promise<void> {
   if (getApiMode() !== 'mock') {
     return
@@ -35,7 +38,7 @@ void enableMocking().then(() => {
       <ThemeProvider>
         <QueryProvider>
           <AuthProvider>
-            <BrowserRouter>
+            <BrowserRouter basename={routerBasename}>
               <AppRouter />
             </BrowserRouter>
           </AuthProvider>
