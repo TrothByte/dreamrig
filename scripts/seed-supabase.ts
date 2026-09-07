@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { createClient } from '@supabase/supabase-js'
+import { BASE_ARTICLES } from '../src/shared/api/mock/base-articles'
 import { products } from '../src/shared/api/mock/generate-catalog'
 
 function loadEnvFile(): void {
@@ -89,6 +90,29 @@ async function main(): Promise<void> {
   }
 
   console.log(`Каталог загружен: ${inserted} товаров`)
+
+  const articleRows = BASE_ARTICLES.map((article) => ({
+    id: article.id,
+    slug: article.slug,
+    title: article.title,
+    excerpt: article.excerpt,
+    rubric: article.rubric,
+    cover_path: article.coverPath,
+    author: article.author,
+    author_role: article.authorRole,
+    reading_minutes: article.readingMinutes,
+    body: article.body,
+    published_at: article.publishedAt,
+  }))
+
+  const { error: articlesError } = await supabase.from('articles').upsert(articleRows, {
+    onConflict: 'slug',
+  })
+  if (articlesError !== null) {
+    throw new Error(`Ошибка вставки статей: ${articlesError.message}`)
+  }
+
+  console.log(`Статьи загружены: ${articleRows.length}`)
 }
 
 main().catch((error: unknown) => {

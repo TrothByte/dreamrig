@@ -1,9 +1,11 @@
 import { ArrowRight, BadgePercent, ShieldCheck, Truck } from 'lucide-react'
 import { useMemo } from 'react'
 import { Link } from 'react-router'
+import { useArticles } from '@/entities/article'
 import { useProducts } from '@/entities/product'
 import { CATEGORY_LABELS, CATEGORY_ORDER, discountPercent } from '@/shared/lib'
 import { Button, CATEGORY_ICONS } from '@/shared/ui'
+import { ArticleGrid, ArticleGridSkeleton } from '@/widgets/blog-grid'
 import { ProductGrid } from '@/widgets/product-grid'
 
 const HOT_KEYS = ['a', 'b', 'c', 'd']
@@ -34,6 +36,9 @@ function HotPricesSkeleton() {
 export function HomePage() {
   const { data, isPending } = useProducts({ page: 1, pageSize: 200, sort: 'popular' })
   const items = data?.items ?? []
+  const { data: blogData, isPending: blogPending } = useArticles({ page: 1, pageSize: 3 })
+  const blogArticles = blogData?.items ?? []
+  const showBlog = blogPending || blogArticles.length > 0
 
   const metrics = useMemo(() => {
     if (items.length === 0) {
@@ -148,6 +153,31 @@ export function HomePage() {
           </div>
         </div>
       </section>
+
+      {showBlog && (
+        <section className="px-4 pb-20 sm:px-6 sm:pb-24" aria-labelledby="blog-title">
+          <div className="mx-auto w-full max-w-7xl">
+            <div className="flex items-end justify-between gap-4">
+              <h2 id="blog-title" className="text-24 font-semibold tracking-tight sm:text-32">
+                Блог о железе
+              </h2>
+              <Link
+                to="/blog"
+                className="rounded-btn text-14 font-medium text-accent hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              >
+                Все статьи
+              </Link>
+            </div>
+            <div className="mt-6">
+              {blogPending ? (
+                <ArticleGridSkeleton count={3} />
+              ) : blogArticles.length > 0 ? (
+                <ArticleGrid articles={blogArticles} className="sm:grid-cols-2 xl:grid-cols-3" />
+              ) : null}
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="border-y border-border bg-surface" aria-label="Наши гарантии">
         <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-6 px-4 py-10 sm:grid-cols-3 sm:px-6 sm:py-12">

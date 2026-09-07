@@ -1,4 +1,5 @@
 import { delay, HttpResponse, http } from 'msw'
+import { type Article, type ArticleRubric, articleRubricSchema } from '../../model/article'
 import {
   type Category,
   categorySchema,
@@ -7,6 +8,7 @@ import {
   type Product,
 } from '../../model/product'
 import type { ProductQueryParams, ProductSort } from '../product-repo'
+import { BASE_ARTICLES } from './base-articles'
 import { products, reviewsBySlug } from './generate-catalog'
 
 const API_DELAY_MIN = 250
@@ -16,6 +18,25 @@ const orderNumbers: number[] = []
 
 async function randomDelay(): Promise<void> {
   await delay(API_DELAY_MIN + Math.floor(Math.random() * API_DELAY_SPREAD))
+}
+
+function sortArticlesByDate(items: Article[]): Article[] {
+  return [...items].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))
+}
+
+function getRelatedArticles(slug: string, limit: number): Article[] {
+  const current = BASE_ARTICLES.find((article) => article.slug === slug)
+  if (current === undefined) {
+    return []
+  }
+  const sorted = sortArticlesByDate(BASE_ARTICLES)
+  const sameRubric = sorted.filter(
+    (article) => article.rubric === current.rubric && article.slug !== slug,
+  )
+  const others = sorted.filter(
+    (article) => article.rubric !== current.rubric && article.slug !== slug,
+  )
+  return [...sameRubric, ...others].slice(0, limit)
 }
 
 function sortProducts(items: Product[], sort: ProductSort): Product[] {
@@ -155,5 +176,43 @@ export const handlers = [
     const id = String(1000 + orderNumbers.length + 1)
     orderNumbers.push(orderNumbers.length + 1)
     return HttpResponse.json({ id, total }, { status: 201 })
+  }),
+
+  http.get('/api/articles', async ({ request }) => {
+    const url = new URL(request.url)
+    const rawRubric = url.searchParams.get('rubric')
+    const rubric = articleRubricSchema.options.includes(rawRubric as ArticleRubric)
+      ? (rawRubric as ArticleRubric)
+      : undefined
+    const page = Math.max(1, Number(url.searchParams.get('page') ?? 1))
+    const pageSize = Math.min(100, Math.max(1, Number(url.searchParams.get('pageSize') ?? 9)))
+
+    let filtered = sortArticlesByDate(BASE_ARTICLES)
+    if (rubric !== undefined) {
+      filtered = filtered.filter((article) => article.rubric === rubric)
+    }
+    const start = (page - 1) * pageSize
+
+    await randomDelay()
+
+    return HttpResponse.json({
+      items: filtered.slice(start, start + pageSize),
+      total: filtered.length,
+      page,
+      pageSize,
+    })
+  }),
+
+  http.get('/api/articles/:slug/related', async ({ params, request }) => {
+    const url = new URL(request.url)
+    const limit = Math.min(6, Math.max(1, Number(url.searchParams.get('limit') ?? 3)))
+    await randomDelay()
+    return HttpResponse.json(getRelatedArticles(String(params.slug), limit))
+  }),
+
+  http.get('/api/articles/:slug', async ({ params }) => {
+    await randomDelay()
+    const article = BASE_ARTICLES.find((item) => item.slug === params.slug) ?? null
+    return HttpResponse.json(article)
   }),
 ]

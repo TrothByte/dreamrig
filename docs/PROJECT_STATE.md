@@ -5,6 +5,16 @@
 
 Обновлено: 2026-09-07. Актуальный тег: **v0.6.0** (фиксы после тега: `1f54e59` корзина).
 
+> Недавняя фича вне фаз: раздел **«Блог»** (список + страница статьи, mock и Supabase) — детали ниже.
+
+## Новое после v0.6.0: раздел «Блог»
+- Роуты: `/blog` (список, фильтр по рубрикам `?rubric=news|review|guide`, «Показать ещё») и `/blog/:slug` (статья: обложка, тело из блоков, «Читайте также»).
+- Контракт: `Article`/`ArticleBlock`/`ArticleRubric` в `src/shared/model/article.ts` (типы — только из zod). Репозиторий `ArticleRepository` → `MswArticleRepository` (GET `/api/articles…`) и `SupabaseArticleRepository`.
+- 7 статей: `src/shared/api/mock/base-articles.ts` (реалистичный русский текст, рубрики: 2 обзора, 2 новости, 3 гайда). Обложки — в `public/blog/` (Wikimedia Commons, атрибуция в `docs/blog-images.md`), путь в БД — относительный `blog/…`, рендер через `assetUrl()` (учтён base `/dreamrig/`).
+- Для живого режима нужно применить миграцию `supabase/schema.sql` (таблица `articles` + RLS: чтение всем, запись `is_admin()`) и запустить `pnpm seed:supabase` — он теперь грузит и статьи (service-ключ в `.env`). Без этого в supabase-режиме раздел пуст/ошибка; демо на GitHub Pages работает на моках.
+- Хуки: `src/entities/article` (`useArticles/useArticle/useRelatedArticles`). UI: виджет `src/widgets/blog-grid`, ссылки «Блог» в хедере/футере + секция «Блог о железе» на главной.
+- Визуальную приёмку обложек и экранов не делал (модель без ввода изображений) — проверить глазами.
+
 ## Быстрый вход в контекст
 1. Правила и фазы: `docs/Agent.md`.
 2. Этот файл — где мы остановились.

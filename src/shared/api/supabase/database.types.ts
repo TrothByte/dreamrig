@@ -34,6 +34,38 @@ export type ProductInsert = {
   updated_at?: string
 }
 
+export interface ArticleRow {
+  id: string
+  slug: string
+  title: string
+  excerpt: string
+  rubric: string
+  cover_path: string
+  author: string
+  author_role: string
+  reading_minutes: number
+  body: unknown
+  published_at: string
+  created_at: string
+  updated_at: string
+}
+
+export type ArticleInsert = {
+  id?: string
+  slug: string
+  title: string
+  excerpt: string
+  rubric: string
+  cover_path: string
+  author: string
+  author_role?: string
+  reading_minutes: number
+  body: unknown
+  published_at?: string
+  created_at?: string
+  updated_at?: string
+}
+
 export interface ProfileRow {
   id: string
   email: string
@@ -99,6 +131,12 @@ export interface Database {
         Row: ProductRow
         Insert: ProductInsert
         Update: Partial<ProductInsert>
+        Relationships: []
+      }
+      articles: {
+        Row: ArticleRow
+        Insert: ArticleInsert
+        Update: Partial<ArticleInsert>
         Relationships: []
       }
       orders: {

@@ -12,6 +12,12 @@ export function Footer() {
           >
             Каталог
           </Link>
+          <Link
+            to="/blog"
+            className="hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-btn"
+          >
+            Блог
+          </Link>
         </nav>
         <p>© 2026 DreamRig</p>
       </div>

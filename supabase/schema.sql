@@ -332,6 +332,50 @@ $$;
 
 grant execute on function public.create_order(jsonb, jsonb, jsonb) to anon, authenticated;
 
+-- ---------------------------------------------------------------------------
+-- Блог: статьи
+-- ---------------------------------------------------------------------------
+
+create table if not exists public.articles (
+  id uuid primary key default gen_random_uuid(),
+  slug text not null unique check (slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$'),
+  title text not null check (char_length(title) between 1 and 200),
+  excerpt text not null check (char_length(excerpt) between 1 and 400),
+  rubric text not null check (rubric in ('news', 'review', 'guide')),
+  cover_path text not null check (char_length(cover_path) between 1 and 300),
+  author text not null check (char_length(author) between 1 and 120),
+  author_role text not null default 'Автор' check (char_length(author_role) between 1 and 120),
+  reading_minutes integer not null check (reading_minutes between 1 and 120),
+  body jsonb not null check (jsonb_typeof(body) = 'array'),
+  published_at timestamptz not null default now(),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+comment on table public.articles is 'Статьи блога DreamRig (рубрики: news, review, guide)';
+
+create index if not exists articles_published_at_idx on public.articles (published_at desc);
+create index if not exists articles_rubric_idx on public.articles (rubric, published_at desc);
+
+create trigger articles_set_updated_at
+  before update on public.articles
+  for each row execute function public.set_updated_at();
+
+alter table public.articles enable row level security;
+
+create policy "articles_public_read"
+  on public.articles
+  for select
+  to anon, authenticated
+  using (true);
+
+create policy "articles_admin_write"
+  on public.articles
+  for all
+  to authenticated
+  using (public.is_admin())
+  with check (public.is_admin());
+
 -- Проверка прав текущего пользователя (для админки)
 create or replace function public.am_i_admin()
 returns boolean

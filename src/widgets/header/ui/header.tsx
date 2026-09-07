@@ -59,6 +59,9 @@ export function Header() {
           <NavLink to="/catalog" className={navItemClass}>
             Каталог
           </NavLink>
+          <NavLink to="/blog" className={navItemClass}>
+            Блог
+          </NavLink>
         </nav>
 
         <div className="flex items-center gap-1">

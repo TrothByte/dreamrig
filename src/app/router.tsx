@@ -1,6 +1,8 @@
 import { Route, Routes } from 'react-router'
 import { AppLayout } from '@/app/layout'
 import { AdminPage } from '@/pages/admin'
+import { BlogPage } from '@/pages/blog'
+import { BlogArticlePage } from '@/pages/blog-article'
 import { CartPage } from '@/pages/cart'
 import { CatalogPage } from '@/pages/catalog'
 import { CheckoutPage } from '@/pages/checkout'
@@ -17,6 +19,8 @@ export function AppRouter() {
         <Route path="/" element={<HomePage />} />
         <Route path="/catalog" element={<CatalogPage />} />
         <Route path="/product/:slug" element={<ProductPage />} />
+        <Route path="/blog" element={<BlogPage />} />
+        <Route path="/blog/:slug" element={<BlogArticlePage />} />
         <Route path="/404" element={<NotFoundPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
