@@ -1,6 +1,7 @@
-import { Check, Plus, Star } from 'lucide-react'
+import { Check, Heart, Plus, Star } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router'
+import { selectIsFavorite, useFavoriteStore } from '@/entities/favorite'
 import { useAddToCart } from '@/features/add-to-cart'
 import { cn, discountPercent, formatPrice } from '@/shared/lib'
 import type { Product } from '@/shared/model'
@@ -14,6 +15,8 @@ interface ProductCardProps {
 export function ProductCard({ product, className }: ProductCardProps) {
   const discount = discountPercent(product.price, product.marketPrice)
   const addToCart = useAddToCart()
+  const isFavorite = useFavoriteStore(selectIsFavorite(product.id))
+  const toggleFavorite = useFavoriteStore((state) => state.toggle)
   const [justAdded, setJustAdded] = useState(false)
   const addedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -75,6 +78,26 @@ export function ProductCard({ product, className }: ProductCardProps) {
           <p className="line-clamp-2 min-h-12 text-16 font-medium leading-snug">{product.name}</p>
         </div>
       </Link>
+
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        aria-pressed={isFavorite}
+        aria-label={
+          isFavorite
+            ? `${product.name}: убрать из избранного`
+            : `${product.name}: добавить в избранное`
+        }
+        onClick={() => toggleFavorite(product.id)}
+        className="absolute right-3 top-3 z-10 border border-border bg-background/75 text-muted backdrop-blur-sm hover:text-foreground"
+      >
+        <Heart
+          aria-hidden="true"
+          strokeWidth={1.75}
+          className={cn('size-[18px]', isFavorite && 'fill-current text-accent')}
+        />
+      </Button>
 
       <div className="mt-auto flex flex-col gap-3 px-5 pb-5 pt-3">
         <div>
