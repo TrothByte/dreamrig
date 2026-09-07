@@ -1,6 +1,7 @@
 import { fakerRU } from '@faker-js/faker'
 import { type Product, productSchema, type Review, reviewSchema } from '../../model/product'
 import { BASE_PRODUCTS, type BaseProductSeed, type ProductSeedOption } from './base-products'
+import { EXTRA_PRODUCTS } from './extra-products'
 
 const GENERATION_SEED = 20260906
 
@@ -42,7 +43,8 @@ function slugify(text: string): string {
 
 function makeSeedEntries(): CatalogSeedEntry[] {
   const entries: CatalogSeedEntry[] = []
-  for (const seed of BASE_PRODUCTS) {
+  const allSeeds = [...BASE_PRODUCTS, ...EXTRA_PRODUCTS]
+  for (const seed of allSeeds) {
     entries.push({ seed })
     for (const option of seed.siblings ?? []) {
       entries.push({ seed, option })
@@ -105,6 +107,7 @@ function buildCatalog() {
   const entries = makeSeedEntries()
   const products: Product[] = []
   const reviews: Review[] = []
+  const seenSlugs = new Set<string>()
 
   for (const [index, entry] of entries.entries()) {
     const product = productSchema.parse(toProduct(entry))
@@ -117,6 +120,11 @@ function buildCatalog() {
       rating: Math.round(averageRating * 10) / 10,
       reviewsCount: productReviews.length,
     })
+
+    if (seenSlugs.has(fullProduct.slug)) {
+      throw new Error(`Дублирующийся slug в каталоге: ${fullProduct.slug}`)
+    }
+    seenSlugs.add(fullProduct.slug)
 
     products.push(fullProduct)
     reviews.push(...productReviews)
