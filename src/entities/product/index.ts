@@ -1,1 +1,1 @@
-export { useProduct, useProducts, useReviews, useSimilar } from './api/hooks'
+export { useProduct, useProducts, useProductsByIds, useReviews, useSimilar } from './api/hooks'

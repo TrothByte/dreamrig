@@ -128,6 +128,18 @@ function getSimilarProducts(slug: string, limit: number): Product[] {
 export const handlers = [
   http.get('/api/products', async ({ request }) => {
     const url = new URL(request.url)
+    const rawIds = url.searchParams.getAll('ids')
+    if (rawIds.length > 0) {
+      const byId = new Map(products.map((product) => [product.id, product]))
+      const items = rawIds
+        .map((id) => byId.get(id))
+        .filter((product): product is Product => product !== undefined)
+
+      await randomDelay()
+
+      return HttpResponse.json({ items, total: items.length, page: 1, pageSize: items.length })
+    }
+
     const params = parseQueryParams(url)
     const page = Math.max(1, Number(url.searchParams.get('page') ?? 1))
     const pageSize = Math.min(200, Math.max(1, Number(url.searchParams.get('pageSize') ?? 24)))

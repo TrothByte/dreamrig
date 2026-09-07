@@ -108,6 +108,34 @@ export class SupabaseProductRepository implements ProductRepository {
     return data === null ? null : parseProductRow(data)
   }
 
+  async getProductsByIds(ids: string[]): Promise<Product[]> {
+    if (ids.length === 0) {
+      return []
+    }
+
+    const client = getSupabaseClient()
+    const byId = new Map<string, Product>()
+    const chunkSize = 100
+
+    for (let start = 0; start < ids.length; start += chunkSize) {
+      const chunk = ids.slice(start, start + chunkSize)
+      const { data, error } = await client.from('products').select(PRODUCT_COLUMNS).in('id', chunk)
+
+      if (error !== null) {
+        throw new Error(`Не удалось загрузить избранное: ${error.message}`)
+      }
+
+      for (const row of data ?? []) {
+        const product = parseProductRow(row)
+        byId.set(product.id, product)
+      }
+    }
+
+    return ids
+      .map((id) => byId.get(id))
+      .filter((product): product is Product => product !== undefined)
+  }
+
   async getReviews(_slug: string): Promise<Review[]> {
     return []
   }

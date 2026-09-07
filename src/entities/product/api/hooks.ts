@@ -2,6 +2,8 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { getProductRepository } from '@/shared/api'
 import type { ProductQueryParams } from '@/shared/api/product-repo'
 
+const joinedIds = (ids: string[]) => ids.join(',')
+
 export function useProducts(params?: ProductQueryParams) {
   return useQuery({
     queryKey: ['products', params ?? {}],
@@ -15,6 +17,15 @@ export function useProduct(slug: string) {
     queryKey: ['product', slug],
     queryFn: () => getProductRepository().getProductBySlug(slug),
     enabled: slug.length > 0,
+  })
+}
+
+export function useProductsByIds(ids: string[]) {
+  return useQuery({
+    queryKey: ['products', 'by-ids', joinedIds(ids)],
+    queryFn: () => getProductRepository().getProductsByIds(ids),
+    enabled: ids.length > 0,
+    placeholderData: keepPreviousData,
   })
 }
 

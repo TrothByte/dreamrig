@@ -24,6 +24,7 @@ export interface ProductPage {
 export interface ProductRepository {
   getProducts(params?: ProductQueryParams): Promise<ProductPage>
   getProductBySlug(slug: string): Promise<Product | null>
+  getProductsByIds(ids: string[]): Promise<Product[]>
   getReviews(slug: string): Promise<Review[]>
   getSimilar(slug: string, limit?: number): Promise<Product[]>
   createOrder(payload: OrderPayload): Promise<{ id: string }>

@@ -49,6 +49,15 @@ export class MswProductRepository implements ProductRepository {
     return requestJson<Product | null>(`/api/products/${encodeURIComponent(slug)}`)
   }
 
+  async getProductsByIds(ids: string[]): Promise<Product[]> {
+    if (ids.length === 0) {
+      return []
+    }
+    const query = ids.map((id) => `ids=${encodeURIComponent(id)}`).join('&')
+    const page = await requestJson<ProductPage>(`/api/products?${query}`)
+    return page.items
+  }
+
   async getReviews(slug: string): Promise<Review[]> {
     return requestJson<Review[]>(`/api/products/${encodeURIComponent(slug)}/reviews`)
   }
