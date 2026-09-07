@@ -1,9 +1,13 @@
-import { LogOut, Moon, ShoppingCart, Sun } from 'lucide-react'
+import { Heart, LogOut, Moon, Search, ShoppingCart, Sun, X } from 'lucide-react'
+import { motion, useReducedMotion } from 'motion/react'
+import { useState } from 'react'
 import { Link, NavLink } from 'react-router'
 import { toast } from 'sonner'
 import { useTheme } from '@/app/theme-provider'
 import { selectCartTotalQty, useCartStore } from '@/entities/cart'
+import { useFavoriteStore } from '@/entities/favorite'
 import { useAuthStore } from '@/entities/user'
+import { HeaderSearch } from '@/features/product-search'
 import { getAuthRepository } from '@/shared/api'
 import { cn } from '@/shared/lib'
 import { displayInitials, displayName } from '@/shared/model/auth'
@@ -22,7 +26,10 @@ const navItemClass = ({ isActive }: { isActive: boolean }) =>
 export function Header() {
   const { theme, toggleTheme } = useTheme()
   const isLight = theme === 'light'
+  const reducedMotion = useReducedMotion()
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
   const cartQty = useCartStore(selectCartTotalQty)
+  const favoritesCount = useFavoriteStore((state) => state.ids.length)
   const profile = useAuthStore((state) => state.profile)
   const status = useAuthStore((state) => state.status)
 
@@ -63,6 +70,12 @@ export function Header() {
             Блог
           </NavLink>
         </nav>
+
+        <HeaderSearch
+          id="desktop-search"
+          className="mx-2 hidden max-w-md flex-1 lg:flex"
+          onNavigate={() => setMobileSearchOpen(false)}
+        />
 
         <div className="flex items-center gap-1">
           {status === 'authed' && profile !== null ? (
@@ -111,6 +124,35 @@ export function Header() {
             type="button"
             variant="ghost"
             size="icon"
+            aria-label={mobileSearchOpen ? 'Закрыть поиск' : 'Открыть поиск'}
+            aria-expanded={mobileSearchOpen}
+            onClick={() => setMobileSearchOpen((current) => !current)}
+            className="text-muted hover:text-foreground lg:hidden"
+          >
+            {mobileSearchOpen ? <X /> : <Search />}
+          </Button>
+
+          <Button
+            asChild
+            variant="ghost"
+            size="icon"
+            aria-label={`Избранное, товаров: ${favoritesCount}`}
+            className="relative text-muted hover:text-foreground"
+          >
+            <Link to="/favorites">
+              <Heart aria-hidden="true" strokeWidth={1.75} />
+              {favoritesCount > 0 && (
+                <span className="pointer-events-none absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-accent px-1 font-mono text-12 font-semibold leading-none tabular-nums text-accent-fg">
+                  {favoritesCount > 99 ? '99+' : favoritesCount}
+                </span>
+              )}
+            </Link>
+          </Button>
+
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
             onClick={toggleTheme}
             aria-label={isLight ? 'Включить тёмную тему' : 'Включить светлую тему'}
             className="text-muted hover:text-foreground"
@@ -128,14 +170,26 @@ export function Header() {
             <Link to="/cart">
               <ShoppingCart aria-hidden="true" strokeWidth={1.75} />
               {cartQty > 0 && (
-                <span className="pointer-events-none absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-accent px-1 font-mono text-12 font-semibold leading-none tabular-nums text-accent-fg">
+                <motion.span
+                  key={cartQty}
+                  initial={reducedMotion === true ? false : { scale: 0.6 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: 'spring', stiffness: 520, damping: 18 }}
+                  className="pointer-events-none absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-accent px-1 font-mono text-12 font-semibold leading-none tabular-nums text-accent-fg"
+                >
                   {cartQty > 99 ? '99+' : cartQty}
-                </span>
+                </motion.span>
               )}
             </Link>
           </Button>
         </div>
       </div>
+
+      {mobileSearchOpen && (
+        <div className="border-t border-border px-4 pb-3 pt-3 lg:hidden">
+          <HeaderSearch id="mobile-search" onNavigate={() => setMobileSearchOpen(false)} />
+        </div>
+      )}
     </header>
   )
 }
