@@ -1,12 +1,13 @@
 import { ArrowRight, ShoppingCart, Trash2 } from 'lucide-react'
 import { Link } from 'react-router'
+import { useShallow } from 'zustand/react/shallow'
 import { selectCartTotals, useCartStore } from '@/entities/cart'
 import { formatPrice } from '@/shared/lib'
 import { Button, ProductVisual, QtyStepper } from '@/shared/ui'
 
 export function CartPage() {
   const lines = useCartStore((state) => state.lines)
-  const totals = useCartStore(selectCartTotals)
+  const totals = useCartStore(useShallow(selectCartTotals))
   const setQty = useCartStore((state) => state.setQty)
   const removeLine = useCartStore((state) => state.removeLine)
 

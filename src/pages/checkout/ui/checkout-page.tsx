@@ -4,6 +4,7 @@ import { type ReactNode, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router'
 import { toast } from 'sonner'
+import { useShallow } from 'zustand/react/shallow'
 import { selectCartTotals, useCartStore } from '@/entities/cart'
 import { useCreateOrder } from '@/entities/order'
 import { useAuthStore } from '@/entities/user'
@@ -162,7 +163,7 @@ interface ConfirmProps {
 
 function ConfirmStep({ onSubmit, onBack, submitting, error }: ConfirmProps) {
   const lines = useCartStore((state) => state.lines)
-  const totals = useCartStore(selectCartTotals)
+  const totals = useCartStore(useShallow(selectCartTotals))
 
   return (
     <div className="flex flex-col gap-6">
@@ -223,7 +224,7 @@ function ConfirmStep({ onSubmit, onBack, submitting, error }: ConfirmProps) {
 
 export function CheckoutPage() {
   const lines = useCartStore((state) => state.lines)
-  const totals = useCartStore(selectCartTotals)
+  const totals = useCartStore(useShallow(selectCartTotals))
   const clearCart = useCartStore((state) => state.clear)
   const profile = useAuthStore((state) => state.profile)
   const createOrder = useCreateOrder()
