@@ -11,7 +11,15 @@ import { ProductGrid } from '@/widgets/product-grid'
 
 const VISUAL_FILTERS = ['none', 'brightness(0.97) saturate(0.92)', 'contrast(1.06) saturate(1.04)']
 
-function ProductGallery({ category }: { category: Category }) {
+function ProductGallery({
+  slug,
+  category,
+  alt,
+}: {
+  slug: string
+  category: Category
+  alt?: string
+}) {
   const [activeTint, setActiveTint] = useState(0)
 
   return (
@@ -20,6 +28,8 @@ function ProductGallery({ category }: { category: Category }) {
         <div style={{ filter: VISUAL_FILTERS[activeTint] }}>
           <ProductVisual
             category={category}
+            slug={slug}
+            alt={alt}
             className="w-full"
             iconClassName="size-16 sm:size-24"
           />
@@ -303,7 +313,7 @@ export function ProductPage() {
         </nav>
 
         <div className="mt-8 grid items-start gap-8 lg:grid-cols-2 lg:gap-12 xl:grid-cols-[1.05fr_1fr]">
-          <ProductGallery category={product.category} />
+          <ProductGallery slug={product.slug} category={product.category} alt={product.name} />
 
           <div className="flex flex-col gap-5">
             <div>

@@ -418,6 +418,7 @@ export function AdminPage() {
                             <div className="flex items-center gap-3">
                               <ProductVisual
                                 category={product.category}
+                                slug={product.slug}
                                 className="w-12 shrink-0 rounded-lg border border-border"
                               />
                               <div className="min-w-0">

@@ -64,7 +64,11 @@ export function CartPage() {
                       aria-label={line.name}
                       className="w-full shrink-0 self-center rounded-[10px] border border-border sm:w-24 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                     >
-                      <ProductVisual category={line.category} className="w-full rounded-[10px]" />
+                      <ProductVisual
+                        category={line.category}
+                        slug={line.slug}
+                        className="w-full rounded-[10px]"
+                      />
                     </Link>
 
                     <div className="min-w-0 flex-1">

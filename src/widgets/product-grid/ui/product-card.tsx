@@ -56,7 +56,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
         className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
       >
         <div className="relative border-b border-border/80">
-          <ProductVisual category={product.category} meta className="w-full" />
+          <ProductVisual category={product.category} slug={product.slug} meta className="w-full" />
         </div>
 
         <div className="flex flex-col gap-2 px-5 pb-2 pt-4">
