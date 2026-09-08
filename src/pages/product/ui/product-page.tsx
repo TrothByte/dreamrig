@@ -1,25 +1,24 @@
 import { Heart, ShieldCheck, Star, Truck } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router'
 import { selectIsFavorite, useFavoriteStore } from '@/entities/favorite'
 import { useProduct, useReviews, useSimilar } from '@/entities/product'
 import { useAddToCart } from '@/features/add-to-cart'
-import { CATEGORY_LABELS, cn, discountPercent, formatPrice, useDocumentMeta } from '@/shared/lib'
+import {
+  CATEGORY_LABELS,
+  cn,
+  discountPercent,
+  formatPrice,
+  resolveProductPhotoUrls,
+  useDocumentMeta,
+} from '@/shared/lib'
 import type { Category, Product } from '@/shared/model'
 import { Button, ProductVisual } from '@/shared/ui'
 import { ProductGrid } from '@/widgets/product-grid'
 
 const VISUAL_FILTERS = ['none', 'brightness(0.97) saturate(0.92)', 'contrast(1.06) saturate(1.04)']
 
-function ProductGallery({
-  slug,
-  category,
-  alt,
-}: {
-  slug: string
-  category: Category
-  alt?: string
-}) {
+function TintGallery({ category }: { category: Category }) {
   const [activeTint, setActiveTint] = useState(0)
 
   return (
@@ -28,8 +27,6 @@ function ProductGallery({
         <div style={{ filter: VISUAL_FILTERS[activeTint] }}>
           <ProductVisual
             category={category}
-            slug={slug}
-            alt={alt}
             className="w-full"
             iconClassName="size-16 sm:size-24"
           />
@@ -58,6 +55,102 @@ function ProductGallery({
       </fieldset>
     </div>
   )
+}
+
+function useAvailableImages(urls: string[]): string[] {
+  const [available, setAvailable] = useState<string[]>([])
+
+  useEffect(() => {
+    let cancelled = false
+    const found: string[] = []
+
+    const probe = (index: number) => {
+      if (index >= urls.length || cancelled) {
+        if (!cancelled) {
+          setAvailable(found)
+        }
+        return
+      }
+      const image = new Image()
+      image.onload = () => {
+        found.push(urls[index])
+        probe(index + 1)
+      }
+      image.onerror = () => probe(index + 1)
+      image.src = urls[index]
+    }
+
+    setAvailable([])
+    probe(0)
+    return () => {
+      cancelled = true
+    }
+  }, [urls])
+
+  return available
+}
+
+function PhotoGallery({
+  category,
+  urls,
+  alt,
+}: {
+  category: Category
+  urls: string[]
+  alt: string
+}) {
+  const available = useAvailableImages(urls)
+  const [activeIndex, setActiveIndex] = useState(0)
+  const safeIndex = Math.min(activeIndex, Math.max(available.length - 1, 0))
+  const currentUrl = available[safeIndex]
+
+  return (
+    <div>
+      <div className="overflow-hidden rounded-card border border-border bg-surface">
+        {currentUrl === undefined ? (
+          <ProductVisual category={category} className="w-full" />
+        ) : (
+          <img src={currentUrl} alt={alt} className="aspect-[4/3] h-auto w-full object-cover" />
+        )}
+      </div>
+      {available.length > 1 && (
+        <div className="mt-3 flex gap-2">
+          {available.map((url, index) => (
+            <button
+              key={url}
+              type="button"
+              aria-pressed={safeIndex === index}
+              aria-label={`Фото ${index + 1}`}
+              onClick={() => setActiveIndex(index)}
+              className={cn(
+                'size-16 overflow-hidden rounded-[10px] border transition-colors duration-200 sm:size-20',
+                safeIndex === index ? 'border-accent' : 'border-border hover:border-border-strong',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+              )}
+            >
+              <img src={url} alt="" className="aspect-[4/3] h-full w-full object-cover" />
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function ProductGallery({
+  slug,
+  category,
+  alt,
+}: {
+  slug: string
+  category: Category
+  alt?: string
+}) {
+  const photoUrls = useMemo(() => resolveProductPhotoUrls(slug), [slug])
+  if (photoUrls.length === 0) {
+    return <TintGallery category={category} />
+  }
+  return <PhotoGallery category={category} urls={photoUrls} alt={alt ?? slug} />
 }
 
 function ProductSkeleton() {

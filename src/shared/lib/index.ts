@@ -6,7 +6,12 @@ export {
 export { assetUrl } from './asset-url'
 export { CATEGORY_LABELS, CATEGORY_ORDER } from './category-meta'
 export { discountPercent, formatPrice } from './format'
-export { resolveProductImage } from './product-images'
+export {
+  productPhotoFileNumber,
+  productPhotoUrl,
+  resolveProductImage,
+  resolveProductPhotoUrls,
+} from './product-images'
 export { slugify } from './slugify'
 export { useDocumentMeta } from './use-document-meta'
 export { cn } from './utils'
