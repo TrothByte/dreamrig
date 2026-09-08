@@ -11,20 +11,20 @@
 
 | № | Категория | Товар | Фото |
 |---|---|---|---|
-| 1 | cpu | AMD Ryzen 5 5600 | 1 |
-| 2 | cpu | AMD Ryzen 5 7500F | 1 |
-| 3 | cpu | AMD Ryzen 5 7600 | 1 |
-| 4 | cpu | AMD Ryzen 5 8600G | 1 |
-| 5 | cpu | AMD Ryzen 5 9600X | 1 |
-| 6 | cpu | AMD Ryzen 7 5700X | 1 |
-| 7 | cpu | AMD Ryzen 7 7800X3D | 1 |
-| 8 | cpu | AMD Ryzen 7 8700G | 1 |
-| 9 | cpu | AMD Ryzen 7 9700X | 1 |
-| 10 | cpu | AMD Ryzen 7 9800X3D | 2 |
-| 11 | cpu | AMD Ryzen 9 7950X | 1 |
-| 12 | cpu | AMD Ryzen 9 9900X | 1 |
-| 13 | cpu | AMD Ryzen 9 9950X | 2 |
-| 14 | cpu | Intel Core i5-12400F | 1 |
+| 1 | cpu | AMD Ryzen 5 5600 | 1 | //
+| 2 | cpu | AMD Ryzen 5 7500F | 1 | //
+| 3 | cpu | AMD Ryzen 5 7600 | 1 | //
+| 4 | cpu | AMD Ryzen 5 8600G | 1 | //
+| 5 | cpu | AMD Ryzen 5 9600X | 1 | //
+| 6 | cpu | AMD Ryzen 7 5700X | 1 | //
+| 7 | cpu | AMD Ryzen 7 7800X3D | 1 | //
+| 8 | cpu | AMD Ryzen 7 8700G | 1 | //
+| 9 | cpu | AMD Ryzen 7 9700X | 1 | // 
+| 10 | cpu | AMD Ryzen 7 9800X3D | 2 | // 
+| 11 | cpu | AMD Ryzen 9 7950X | 1 | //
+| 12 | cpu | AMD Ryzen 9 9900X | 1 | //
+| 13 | cpu | AMD Ryzen 9 9950X | 2 | // 
+| 14 | cpu | Intel Core i5-12400F | 1 | //
 | 15 | cpu | Intel Core i5-14600KF | 1 |
 | 16 | cpu | Intel Core i7-14700K | 1 |
 | 17 | cpu | Intel Core i7-14700KF | 1 |
